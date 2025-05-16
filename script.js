@@ -310,3 +310,33 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// ========== TEMA ==========
+const themeSelect = document.getElementById("theme");
+
+function applyTheme(theme) {
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else if (theme === "light") {
+    document.documentElement.classList.remove("dark");
+  } else {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.classList.toggle("dark", prefersDark);
+  }
+}
+
+const savedTheme = localStorage.getItem("theme") || "system";
+themeSelect.value = savedTheme;
+applyTheme(savedTheme);
+
+themeSelect.addEventListener("change", () => {
+  const selected = themeSelect.value;
+  localStorage.setItem("theme", selected);
+  applyTheme(selected);
+});
+
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if (localStorage.getItem("theme") === "system") {
+    applyTheme("system");
+  }
+});

@@ -294,24 +294,24 @@ footer {
   body {
     padding: 15px;
   }
-  
+
   ul {
     grid-template-columns: 1fr;
   }
-  
+
   .controls {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .sort-container {
     width: 100%;
   }
-  
+
   #sort, #items-per-page {
     width: 100%;
   }
-  
+
   .pagination-controls {
     width: 100%;
     overflow-x: auto;
@@ -342,28 +342,29 @@ footer {
 .file-item:nth-child(9) { animation-delay: 0.9s; }
 .file-item:nth-child(10) { animation-delay: 1.0s; }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-color: #3498db;
-    --secondary-color: #ecf0f1;
-    --background-color: #121212;
-    --card-color: #1e1e1e;
-    --text-color: #e0e0e0;
-    --muted-color: #b0b0b0;
-  }
-  
-  #search, #sort, #items-per-page, .pagination-button {
-    background: #2d2d2d;
-    color: #e0e0e0;
-    border-color: #444;
-  }
-  
-  .file-details {
-    border-top-color: #444;
-  }
-  
-  footer {
-    border-top-color: #444;
-  }
+/* Dark mode via classe .dark */
+.dark {
+  --primary-color: #3498db;
+  --secondary-color: #ecf0f1;
+  --background-color: #121212;
+  --card-color: #1e1e1e;
+  --text-color: #e0e0e0;
+  --muted-color: #b0b0b0;
+}
+
+.dark #search,
+.dark #sort,
+.dark #items-per-page,
+.dark .pagination-button {
+  background: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+.dark .file-details {
+  border-top-color: #444;
+}
+
+.dark footer {
+  border-top-color: #444;
 }
