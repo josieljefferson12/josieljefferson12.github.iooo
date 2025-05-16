@@ -3,15 +3,23 @@
     "name": "PiauiTV.m3u",
     "path": "PiauiTV.m3u",
     "size": 76891,
-    "lastModified": "2025-05-16T09:30:57.015Z",
+    "lastModified": "2025-05-16T09:55:51.514Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/PiauiTV.m3u",
     "file_type": "m3u"
+  },
+  {
+    "name": "XGallery_1.9.9.apk",
+    "path": "XGallery_1.9.9.apk",
+    "size": 19544542,
+    "lastModified": "2025-05-16T09:55:51.564Z",
+    "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/XGallery_1.9.9.apk",
+    "file_type": "apk"
   },
   {
     "name": "epgbrasil.m3u",
     "path": "epgbrasil.m3u",
     "size": 639051,
-    "lastModified": "2025-05-16T09:30:57.017Z",
+    "lastModified": "2025-05-16T09:55:51.566Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasil.m3u",
     "file_type": "m3u"
   },
@@ -19,7 +27,7 @@
     "name": "epgbrasil.xml.gz",
     "path": "epgbrasil.xml.gz",
     "size": 769462,
-    "lastModified": "2025-05-16T09:30:57.018Z",
+    "lastModified": "2025-05-16T09:55:51.568Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasil.xml.gz",
     "file_type": "gz"
   },
@@ -27,7 +35,7 @@
     "name": "epgbrasilportugal.m3u",
     "path": "epgbrasilportugal.m3u",
     "size": 863903,
-    "lastModified": "2025-05-16T09:30:57.020Z",
+    "lastModified": "2025-05-16T09:55:51.570Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasilportugal.m3u",
     "file_type": "m3u"
   },
@@ -35,7 +43,7 @@
     "name": "epgbrasilportugal.xml.gz",
     "path": "epgbrasilportugal.xml.gz",
     "size": 1563830,
-    "lastModified": "2025-05-16T09:30:57.023Z",
+    "lastModified": "2025-05-16T09:55:51.573Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasilportugal.xml.gz",
     "file_type": "gz"
   },
@@ -43,7 +51,7 @@
     "name": "epgportugal.m3u",
     "path": "epgportugal.m3u",
     "size": 2262388,
-    "lastModified": "2025-05-16T09:30:57.029Z",
+    "lastModified": "2025-05-16T09:55:51.578Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgportugal.m3u",
     "file_type": "m3u"
   },
@@ -51,7 +59,7 @@
     "name": "epgportugal.xml.gz",
     "path": "epgportugal.xml.gz",
     "size": 2072826,
-    "lastModified": "2025-05-16T09:30:57.034Z",
+    "lastModified": "2025-05-16T09:55:51.584Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgportugal.xml.gz",
     "file_type": "gz"
   },
@@ -59,7 +67,7 @@
     "name": "m3u@proton.me.m3u",
     "path": "m3u@proton.me.m3u",
     "size": 4700419,
-    "lastModified": "2025-05-16T09:30:57.045Z",
+    "lastModified": "2025-05-16T09:55:51.595Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/m3u@proton.me.m3u",
     "file_type": "m3u"
   }
