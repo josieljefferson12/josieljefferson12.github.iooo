@@ -30,8 +30,8 @@ permissions:
 concurrency:
   # Agrupa todas as execuções relacionadas ao pages
   group: "pages"
-  # Não cancela execuções em andamento
-  cancel-in-progress: false
+  # false => Não cancela execuções em andamento
+  cancel-in-progress: true  # Agora cancela execuções anteriores automaticamente
 
 # Define os jobs (tarefas) que compõem o workflow
 jobs:
