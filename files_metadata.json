@@ -1,9 +1,17 @@
 [
   {
+    "name": "ApktoolM_2.4.0-250411.apk",
+    "path": "ApktoolM_2.4.0-250411.apk",
+    "size": 15868177,
+    "lastModified": "2025-05-16T10:00:23.579Z",
+    "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/ApktoolM_2.4.0-250411.apk",
+    "file_type": "apk"
+  },
+  {
     "name": "FX_9.0.1.2.apk",
     "path": "FX_9.0.1.2.apk",
     "size": 20614025,
-    "lastModified": "2025-05-16T09:59:20.743Z",
+    "lastModified": "2025-05-16T10:00:23.622Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/FX_9.0.1.2.apk",
     "file_type": "apk"
   },
@@ -11,7 +19,7 @@
     "name": "GaleriaA_2.2.72.0.apk",
     "path": "GaleriaA_2.2.72.0.apk",
     "size": 10108511,
-    "lastModified": "2025-05-16T09:59:20.772Z",
+    "lastModified": "2025-05-16T10:00:23.651Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/GaleriaA_2.2.72.0.apk",
     "file_type": "apk"
   },
@@ -19,7 +27,7 @@
     "name": "Gerenciador_de_Arquivos_3.5.6.apk",
     "path": "Gerenciador_de_Arquivos_3.5.6.apk",
     "size": 21065848,
-    "lastModified": "2025-05-16T09:59:20.876Z",
+    "lastModified": "2025-05-16T10:00:23.745Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/Gerenciador_de_Arquivos_3.5.6.apk",
     "file_type": "apk"
   },
@@ -27,7 +35,7 @@
     "name": "HY300pro-A_11.8.8.apk",
     "path": "HY300pro-A_11.8.8.apk",
     "size": 11397143,
-    "lastModified": "2025-05-16T09:59:20.918Z",
+    "lastModified": "2025-05-16T10:00:23.792Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/HY300pro-A_11.8.8.apk",
     "file_type": "apk"
   },
@@ -35,7 +43,7 @@
     "name": "MercadoPlay_1.7.0.apk",
     "path": "MercadoPlay_1.7.0.apk",
     "size": 25261273,
-    "lastModified": "2025-05-16T09:59:20.994Z",
+    "lastModified": "2025-05-16T10:00:23.867Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/MercadoPlay_1.7.0.apk",
     "file_type": "apk"
   },
@@ -43,15 +51,23 @@
     "name": "PiauiTV.m3u",
     "path": "PiauiTV.m3u",
     "size": 76891,
-    "lastModified": "2025-05-16T09:59:20.995Z",
+    "lastModified": "2025-05-16T10:00:23.867Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/PiauiTV.m3u",
     "file_type": "m3u"
+  },
+  {
+    "name": "Teclado e mouse Bluetooth_6.10.4.apk",
+    "path": "Teclado e mouse Bluetooth_6.10.4.apk",
+    "size": 8014031,
+    "lastModified": "2025-05-16T10:00:23.904Z",
+    "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/Teclado e mouse Bluetooth_6.10.4.apk",
+    "file_type": "apk"
   },
   {
     "name": "XGallery_1.9.9.apk",
     "path": "XGallery_1.9.9.apk",
     "size": 19544542,
-    "lastModified": "2025-05-16T09:59:21.045Z",
+    "lastModified": "2025-05-16T10:00:23.955Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/XGallery_1.9.9.apk",
     "file_type": "apk"
   },
@@ -59,7 +75,7 @@
     "name": "epgbrasil.m3u",
     "path": "epgbrasil.m3u",
     "size": 639051,
-    "lastModified": "2025-05-16T09:59:21.048Z",
+    "lastModified": "2025-05-16T10:00:23.957Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasil.m3u",
     "file_type": "m3u"
   },
@@ -67,7 +83,7 @@
     "name": "epgbrasil.xml.gz",
     "path": "epgbrasil.xml.gz",
     "size": 769462,
-    "lastModified": "2025-05-16T09:59:21.049Z",
+    "lastModified": "2025-05-16T10:00:23.958Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasil.xml.gz",
     "file_type": "gz"
   },
@@ -75,7 +91,7 @@
     "name": "epgbrasilportugal.m3u",
     "path": "epgbrasilportugal.m3u",
     "size": 863903,
-    "lastModified": "2025-05-16T09:59:21.051Z",
+    "lastModified": "2025-05-16T10:00:23.960Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasilportugal.m3u",
     "file_type": "m3u"
   },
@@ -83,7 +99,7 @@
     "name": "epgbrasilportugal.xml.gz",
     "path": "epgbrasilportugal.xml.gz",
     "size": 1563830,
-    "lastModified": "2025-05-16T09:59:21.054Z",
+    "lastModified": "2025-05-16T10:00:23.963Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgbrasilportugal.xml.gz",
     "file_type": "gz"
   },
@@ -91,7 +107,7 @@
     "name": "epgportugal.m3u",
     "path": "epgportugal.m3u",
     "size": 2262388,
-    "lastModified": "2025-05-16T09:59:21.059Z",
+    "lastModified": "2025-05-16T10:00:23.968Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgportugal.m3u",
     "file_type": "m3u"
   },
@@ -99,7 +115,7 @@
     "name": "epgportugal.xml.gz",
     "path": "epgportugal.xml.gz",
     "size": 2072826,
-    "lastModified": "2025-05-16T09:59:21.065Z",
+    "lastModified": "2025-05-16T10:00:23.974Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/epgportugal.xml.gz",
     "file_type": "gz"
   },
@@ -107,7 +123,7 @@
     "name": "iMPlayer TV_11.8.8.apk",
     "path": "iMPlayer TV_11.8.8.apk",
     "size": 11368007,
-    "lastModified": "2025-05-16T09:59:21.104Z",
+    "lastModified": "2025-05-16T10:00:23.983Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/iMPlayer TV_11.8.8.apk",
     "file_type": "apk"
   },
@@ -115,7 +131,7 @@
     "name": "m3u@proton.me.m3u",
     "path": "m3u@proton.me.m3u",
     "size": 4700419,
-    "lastModified": "2025-05-16T09:59:21.115Z",
+    "lastModified": "2025-05-16T10:00:23.992Z",
     "download_url": "https://raw.githubusercontent.com/josieljefferson12/josieljefferson12.github.io.oficial/main/m3u@proton.me.m3u",
     "file_type": "m3u"
   }
