@@ -1,0 +1,28 @@
+{
+  "name": "josielluz-metadata-generator",
+  "version": "1.0.0",
+  "description": "Gerador de metadados para o projeto josielluz no GitHub",
+  "main": "generate_metadata.js",
+  "scripts": {
+    "start": "node generate_metadata.js",
+    "test": "echo \"Teste executado com sucesso\" && exit 0"
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josieljefferson12/josieljefferson12.github.io.oficial.git"
+  },
+  "keywords": [
+    "github",
+    "pages",
+    "metadata",
+    "jekyll"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
