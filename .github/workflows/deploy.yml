@@ -24,33 +24,45 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js (with fallback)
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'  # Só ativa cache se existir package-lock.json
+          cache: 'npm'
 
-      - name: Initialize npm if no lock file
-        if: "!exists('package-lock.json') && !exists('yarn.lock')"
+      - name: Handle package-lock.json
         run: |
-          npm init -y
-          echo "{}" > package-lock.json  # Cria lock file vazio
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+          if [ ! -f package-lock.json ]; then
+            if [ -f package.json ]; then
+              npm install --package-lock-only --no-audit --no-fund
+            else
+              npm init -y
+              echo "{}" > package-lock.json
+            fi
+          else
+            npm ci --no-audit --no-fund
+          fi
 
       - name: Generate metadata
         run: npm start
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit metadata changes
+      - name: Commit updated files
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add files_metadata.json
-          git diff --cached --quiet || git commit -m "Auto-update metadata [skip ci]"
-          git push
+          
+          # Verifica por mudanças em ambos os arquivos
+          git add package-lock.json files_metadata.json
+          
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update package-lock.json and metadata [skip ci]"
+            git pull --rebase
+            git push
+          fi
 
   build:
     needs: setup
@@ -58,6 +70,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify metadata and lock file
+        run: |
+          if [ ! -f files_metadata.json ]; then
+            echo "files_metadata.json not found!"
+            exit 1
+          fi
+          if [ ! -f package-lock.json ]; then
+            echo "package-lock.json not found!"
+            exit 1
+          fi
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
