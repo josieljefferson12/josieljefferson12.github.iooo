@@ -24,28 +24,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node.js (with cache workaround)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # Cache será ignorado se não houver lock file
+          cache: ${{ github.workspace }}/package-lock.json && 'npm' || ''
 
-      # Correção: Substituição da verificação com exists() por um comando shell
-      - name: Check for lock files
-        id: check-lockfiles
+      - name: Create package.json if missing
+        id: create-package
         run: |
-          if [ ! -f package-lock.json ] && [ ! -f yarn.lock ]; then
-            echo "lockfile_exists=false" >> $GITHUB_OUTPUT
+          if [ ! -f package.json ]; then
+            npm init -y
+            echo "package_created=true" >> $GITHUB_OUTPUT
           else
-            echo "lockfile_exists=true" >> $GITHUB_OUTPUT
+            echo "package_created=false" >> $GITHUB_OUTPUT
           fi
 
-      # Agora usamos a saída do passo anterior como condição
-      - name: Initialize npm if no lock file
-        if: steps.check-lockfiles.outputs.lockfile_exists == 'false'
+      - name: Create lock file if missing
+        if: steps.create-package.outputs.package_created == 'true' || !files.exists('package-lock.json')
         run: |
-          npm init -y
-          echo "{}" > package-lock.json
+          if [ ! -f package-lock.json ]; then
+            npm install --package-lock-only
+          fi
 
       - name: Install dependencies
         run: |
@@ -78,32 +79,15 @@ jobs:
           ruby-version: '3.1'
           bundler-cache: true
 
-      - name: Verify environment
-        run: |
-          ruby -v
-          gem -v
-          bundler -v
-
-      - name: Install gems
-        run: |
-          gem install bundler
-          bundle config set force_ruby_platform true
-          bundle install
-
       - name: Build with Jekyll
         run: |
-          bundle exec jekyll doctor
-          bundle exec jekyll build --trace
+          bundle install
+          bundle exec jekyll build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site
-
-      - name: Debug - Check built site
-        run: |
-          ls -la _site
-          du -sh _site
 
   deploy:
     needs: build
@@ -115,7 +99,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Show deployment URL
-        run: |
-          echo "Deployed to: ${{ steps.deployment.outputs.page_url }}"
