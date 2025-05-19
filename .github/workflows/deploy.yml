@@ -28,13 +28,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'  # Só ativa cache se existir package-lock.json
+          cache: 'npm'
 
       - name: Initialize npm if no lock file
-        if: "!exists('package-lock.json') && !exists('yarn.lock')"
         run: |
-          npm init -y
-          echo "{}" > package-lock.json  # Cria lock file vazio
+          if [ ! -f package-lock.json ] && [ ! -f yarn.lock ]; then
+            npm init -y
+            echo "{}" > package-lock.json
+          fi
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
