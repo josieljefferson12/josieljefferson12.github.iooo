@@ -17,43 +17,47 @@ concurrency:
 jobs:
   setup:
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # Tempo máximo para este job
+    timeout-minutes: 15
     steps:
-      - name: Checkout repository (with retry)
-        uses: nick-fields/retry@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          timeout_minutes: 5
-          max_attempts: 3
-          command: |
-            git clone https://github.com/josieljefferson12/josieljefferson12.github.io.git .
-            git checkout main
+          fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node.js (with fallback)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'npm'  # Só ativa cache se existir package-lock.json
+
+      - name: Initialize npm if no lock file
+        if: "!exists('package-lock.json') && !exists('yarn.lock')"
+        run: |
+          npm init -y
+          echo "{}" > package-lock.json  # Cria lock file vazio
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --no-audit --no-fund
 
       - name: Generate metadata
         run: npm start
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Commit metadata changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add files_metadata.json
+          git diff --cached --quiet || git commit -m "Auto-update metadata [skip ci]"
+          git push
+
   build:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code (optimized)
+      - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          repository: josieljefferson12/josieljefferson12.github.io
-          ref: main
-          fetch-depth: 0  # Baixa todo o histórico
-          persist-credentials: false  # Mais seguro
-          clean: false  # Mais rápido
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -81,4 +85,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        timeout-minutes: 10
