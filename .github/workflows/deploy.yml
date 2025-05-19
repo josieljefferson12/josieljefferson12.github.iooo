@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: "pages-deploy-${{ github.ref }}"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   setup:
@@ -24,34 +24,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js (with cache workaround)
+      - name: Setup Node.js (with fallback)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # Cache será ignorado se não houver lock file
-          cache: ${{ github.workspace }}/package-lock.json && 'npm' || ''
+          cache: 'npm'  # Só ativa cache se existir package-lock.json
 
-      - name: Create package.json if missing
-        id: create-package
+      - name: Initialize npm if no lock file
+        if: "!exists('package-lock.json') && !exists('yarn.lock')"
         run: |
-          if [ ! -f package.json ]; then
-            npm init -y
-            echo "package_created=true" >> $GITHUB_OUTPUT
-          else
-            echo "package_created=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create lock file if missing
-        if: steps.create-package.outputs.package_created == 'true' || !files.exists('package-lock.json')
-        run: |
-          if [ ! -f package-lock.json ]; then
-            npm install --package-lock-only
-          fi
+          npm init -y
+          echo "{}" > package-lock.json  # Cria lock file vazio
 
       - name: Install dependencies
-        run: |
-          npm install --no-audit --no-fund
-          npm install --no-audit --no-fund --legacy-peer-deps || npm install --no-audit --no-fund --force
+        run: npm install --no-audit --no-fund
 
       - name: Generate metadata
         run: npm start
