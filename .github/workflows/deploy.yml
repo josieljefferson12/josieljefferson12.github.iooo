@@ -1,140 +1,121 @@
 name: Deploy Jekyll to GitHub Pages
 
 on:
-  # Dispara o workflow quando há push para o branch main
   push:
     branches: ["main"]
-  
-  # Permite acionar manualmente pelo GitHub UI
   workflow_dispatch:
 
-# Configuração de permissões necessárias
 permissions:
-  contents: write   # Permissão para escrever no repositório
-  pages: write      # Permissão para publicar GitHub Pages
-  id-token: write   # Permissão para autenticação
+  contents: write
+  pages: write
+  id-token: write
 
-# Configuração de concorrência para evitar múltiplos deploys simultâneos
 concurrency:
   group: "pages-deploy-${{ github.ref }}"
-  cancel-in-progress: true  # Cancela execuções anteriores em andamento
+  cancel-in-progress: true
 
 jobs:
-  # Job 1: Configuração inicial e geração de metadados
   setup:
-    runs-on: ubuntu-latest  # Executa no Ubuntu mais recente
-    timeout-minutes: 15     # Timeout de 15 minutos para evitar execução infinita
-    
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      # Passo 1.1: Checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Baixa todo o histórico do git (necessário para algumas operações)
-      
-      # Passo 1.2: Configuração do Node.js (para scripts JavaScript se necessário)
+          fetch-depth: 0
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Versão LTS estável
-          cache: 'npm'        # Habilita cache se existir package-lock.json
-      
-      # Passo 1.3: Inicializa npm se não existir lock file
+          node-version: '20'
+          cache: 'npm'
+
+      # Correção: Substituição da verificação com exists() por um comando shell
+      - name: Check for lock files
+        id: check-lockfiles
+        run: |
+          if [ ! -f package-lock.json ] && [ ! -f yarn.lock ]; then
+            echo "lockfile_exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "lockfile_exists=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Agora usamos a saída do passo anterior como condição
       - name: Initialize npm if no lock file
-        if: "!exists('package-lock.json') && !exists('yarn.lock')"
+        if: steps.check-lockfiles.outputs.lockfile_exists == 'false'
         run: |
-          npm init -y  # Cria package.json básico
-          echo "{}" > package-lock.json  # Cria lock file vazio
-      
-      # Passo 1.4: Instala dependências npm
-      - name: Install npm dependencies
+          npm init -y
+          echo "{}" > package-lock.json
+
+      - name: Install dependencies
         run: |
-          npm install --no-audit --no-fund  # Instala sem verificação de auditoria
-          npm install --no-audit --no-fund --legacy-peer-deps || npm install --no-audit --no-fund --force  # Fallback para problemas de dependência
-      
-      # Passo 1.5: Geração de metadados (ajuste conforme sua necessidade)
+          npm install --no-audit --no-fund
+          npm install --no-audit --no-fund --legacy-peer-deps || npm install --no-audit --no-fund --force
+
       - name: Generate metadata
-        run: npm start  # Executa o script de geração de metadados
+        run: npm start
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Token para autenticação
-      
-      # Passo 1.6: Commit das alterações de metadados
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Commit metadata changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add files_metadata.json  # Ajuste para o nome do seu arquivo de metadados
+          git add files_metadata.json
           git diff --cached --quiet || git commit -m "Auto-update metadata [skip ci]"
           git push
-      
-      # Passo 1.7: Debug - Lista arquivos para verificação
-      - name: Debug - List files
-        run: ls -la
 
-  # Job 2: Build do site Jekyll
   build:
-    needs: setup  # Depende do job setup terminar com sucesso
+    needs: setup
     runs-on: ubuntu-latest
-    
     steps:
-      # Passo 2.1: Checkout do código
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      # Passo 2.2: Configuração do Ruby
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'  # Versão compatível com Jekyll
-          bundler-cache: true  # Habilita cache do Bundler para instalação mais rápida
-      
-      # Passo 2.3: Verificação do ambiente
+          ruby-version: '3.1'
+          bundler-cache: true
+
       - name: Verify environment
         run: |
           ruby -v
           gem -v
           bundler -v
-      
-      # Passo 2.4: Instalação das gems
+
       - name: Install gems
         run: |
-          gem install bundler  # Garante que o bundler está instalado
-          bundle config set force_ruby_platform true  # Evita problemas com plataformas
-          bundle install  # Instala as gems do Gemfile
-      
-      # Passo 2.5: Build do Jekyll
+          gem install bundler
+          bundle config set force_ruby_platform true
+          bundle install
+
       - name: Build with Jekyll
         run: |
-          bundle exec jekyll doctor  # Verifica problemas no ambiente
-          bundle exec jekyll build --trace  # Build com trace para debug
-      
-      # Passo 2.6: Upload do artefato para deploy
+          bundle exec jekyll doctor
+          bundle exec jekyll build --trace
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site  # Pasta padrão de output do Jekyll
-      
-      # Passo 2.7: Debug - Verifica conteúdo do _site
+          path: ./_site
+
       - name: Debug - Check built site
         run: |
           ls -la _site
           du -sh _site
 
-  # Job 3: Deploy para GitHub Pages
   deploy:
-    needs: build  # Depende do job build terminar com sucesso
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    
     steps:
-      # Passo 3.1: Deploy para GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      
-      # Passo 3.2: Exibe a URL do site
+
       - name: Show deployment URL
         run: |
           echo "Deployed to: ${{ steps.deployment.outputs.page_url }}"
