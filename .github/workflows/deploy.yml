@@ -24,11 +24,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js (with fallback)
+      - name: Setup Node.js (sem cache)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Initialize npm if no lock file
         run: |
