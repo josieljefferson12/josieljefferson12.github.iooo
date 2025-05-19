@@ -1,29 +1,27 @@
-name: Deploy Jekyll with GitHub Pages
+name: Deploy Jekyll to GitHub Pages
 
 on:
   push:
     branches: ["main"]
-    paths:
-      - '**/*'
   workflow_dispatch:
   schedule:
-    - cron: '0 0 */2 * *'
+    - cron: '0 0 */2 * *'  # Executa a cada 2 dias (opcional)
 
 permissions:
   contents: write
   pages: write
   id-token: write
 
-# Configuração para esperar a conclusão de execuções anteriores
+# Controle de concorrência - EVITA conflitos de deploy
 concurrency:
-  group: "pages"  # Todas as execuções deste workflow compartilham o mesmo grupo
-  cancel-in-progress: false  # Aguarda a conclusão em vez de cancelar
+  group: "pages-deploy-${{ github.ref }}"  # Grupo único por branch
+  cancel-in-progress: false  # Aguarda deployments anteriores
 
 jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -36,24 +34,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Generate files metadata
+      - name: Generate metadata
         run: npm start
         env:
-          GITHUB_TOKEN: ${{ secrets.MY_PAGES_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit metadata changes
+      - name: Commit metadata
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add files_metadata.json
-          git diff --cached --quiet || git commit -m "Automatic metadata update [skip ci]"
+          git diff --cached --quiet || git commit -m "Auto-update metadata [skip ci]"
           git push
 
   build:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Ruby
@@ -62,10 +60,7 @@ jobs:
           ruby-version: '3.1'
           bundler-cache: true
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Build with Jekyll
+      - name: Build Jekyll site
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./
@@ -73,8 +68,6 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-        with:
-          path: './_site'
 
   deploy:
     needs: build
@@ -83,6 +76,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for any ongoing deployments
+        run: sleep 30  # Pausa adicional como segurança
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        timeout-minutes: 10  # Tempo máximo para o deploy
