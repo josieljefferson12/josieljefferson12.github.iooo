@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Josiel Jefferson - Downloads</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📁 ARQUIVOS PARA DOWNLOAD</h1>
+    <p class="subtitle">Projeto josielluz no GitHub</p>
+  </header>
+
+  <div id="stats-container" class="stats-container">
+    <div class="stat-card">
+      <div class="stat-value" id="total-files">0</div>
+      <div class="stat-label">Arquivos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="total-size">0 MB</div>
+      <div class="stat-label">Tamanho Total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="last-update">-</div>
+      <div class="stat-label">Última atualização</div>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="search" placeholder="Pesquisar arquivos..." aria-label="Pesquisar arquivos">
+  </div>
+
+  <div class="controls">
+    <div class="sort-container">
+      <label for="sort">Ordenar por:</label>
+      <select id="sort" aria-label="Ordenar arquivos">
+        <option value="name">Nome (A-Z)</option>
+        <option value="nameDesc">Nome (Z-A)</option>
+        <option value="date">Data (Mais recentes)</option>
+        <option value="dateOldest">Data (Mais antigo)</option>
+        <option value="size">Tamanho (Maior)</option>
+        <option value="sizeSmallest">Tamanho (Menor)</option>
+        <option value="type">Tipo (A-Z)</option>
+        <option value="typeDesc">Tipo (Z-A)</option>
+      </select>
+    </div>
+    <div class="sort-container">
+      <label for="items-per-page">Itens por página:</label>
+      <select id="items-per-page" aria-label="Itens por página">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="30">30</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+    <div class="sort-container">
+      <label for="theme">Tema:</label>
+      <select id="theme" aria-label="Escolher tema">
+        <option value="light">Claro</option>
+        <option value="dark">Escuro</option>
+        <option value="system" selected>Sistema</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando lista de arquivos...</p>
+  </div>
+
+  <ul id="file-list"></ul>
+
+  <div id="pagination-container" class="pagination-container">
+    <div id="pagination-controls" class="pagination-controls"></div>
+    <div id="pagination-info" class="pagination-info"></div>
+  </div>
+
+  <footer>
+    <p>Projeto mantido por <a href="https://github.com/josieljefferson12" target="_blank">Josiel Jefferson</a></p>
+    <p class="build-info">Última atualização: <span id="build-date"></span></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
