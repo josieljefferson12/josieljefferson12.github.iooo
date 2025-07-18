@@ -39,12 +39,18 @@ jobs:
       - name: Install dependencies
         id: npm-install
         run: |
-          # Verifica se package-lock.json existe
-          if [ -f "package-lock.json" ]; then
-            echo "Using npm ci for deterministic install"
+          # Primeiro verifica se package.json existe
+          if [ ! -f "package.json" ]; then
+            echo "No package.json found, skipping npm install"
+            exit 0
+          fi
+          
+          # Verifica se package-lock.json existe e é válido
+          if [ -f "package-lock.json" ] && [ -s "package-lock.json" ]; then
+            echo "Using npm ci with existing package-lock.json"
             npm ci
           else
-            echo "No package-lock.json found, using npm install"
+            echo "Using regular npm install"
             npm install
           fi
 
@@ -75,7 +81,7 @@ jobs:
           git push
 
       - name: Generate package-lock.json
-        if: steps.npm-install.outcome == 'success' && !(steps.npm-install.outputs.lockfile-exists)
+        if: success() && steps.npm-install.outcome == 'success' && (!(exists('package-lock.json')) || (exists('package-lock.json') && !(steps.npm-install.outputs.lockfile-used == 'true')))
         run: |
           npm install --package-lock-only
           git add package-lock.json
