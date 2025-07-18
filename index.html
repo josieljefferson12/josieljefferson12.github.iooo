@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Josiel Jefferson - Downloads</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #333333;
+      --primary-color: #4285f4;
+      --secondary-color: #f1f1f1;
+      --border-color: #dddddd;
+      --card-bg: #f9f9f9;
+      --hover-color: #eaeaea;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #f1f1f1;
+      --primary-color: #8ab4f8;
+      --secondary-color: #2d2d2d;
+      --border-color: #444444;
+      --card-bg: #2d2d2d;
+      --hover-color: #3d3d3d;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      margin: 0.5rem 0 0;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .stats-container {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      text-align: center;
+      min-width: 120px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    #search {
+      padding: 0.8rem 1rem;
+      width: 80%;
+      max-width: 500px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 1rem;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .sort-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    select {
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .spinner {
+      border: 4px solid var(--secondary-color);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #file-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      max-width: 900px;
+    }
+
+    .file-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.2s;
+    }
+
+    .file-item:hover {
+      background-color: var(--hover-color);
+    }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-icon {
+      font-size: 1.5rem;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .file-name {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-details {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .file-download {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+
+    .file-download:hover {
+      background-color: #3367d6;
+    }
+
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .pagination-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .pagination-btn {
+      padding: 0.5rem 1rem;
+      background-color: var(--secondary-color);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .pagination-btn:hover {
+      background-color: var(--hover-color);
+    }
+
+    .pagination-btn.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .build-info {
+      margin-top: 0.5rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .file-details {
+        flex-direction: column;
+        gap: 0.3rem;
+        align-items: flex-end;
+      }
+      
+      .file-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .file-download {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📁 ARQUIVOS PARA DOWNLOAD</h1>
+    <p class="subtitle">Projeto josielluz no GitHub</p>
+  </header>
+
+  <div id="stats-container" class="stats-container">
+    <div class="stat-card">
+      <div class="stat-value" id="total-files">0</div>
+      <div class="stat-label">Arquivos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="total-size">0 MB</div>
+      <div class="stat-label">Tamanho Total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="last-update">-</div>
+      <div class="stat-label">Última Atualização</div>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <input type="text" id="search" placeholder="Pesquisar arquivos..." aria-label="Pesquisar arquivos">
+  </div>
+
+  <div class="controls">
+    <div class="sort-container">
+      <label for="sort">Ordenar por:</label>
+      <select id="sort" aria-label="Ordenar arquivos">
+        <option value="name">Nome (A-Z)</option>
+        <option value="nameDesc">Nome (Z-A)</option>
+        <option value="date">Data (Mais recentes)</option>
+        <option value="dateOldest">Data (Mais antigo)</option>
+        <option value="size">Tamanho (Maior)</option>
+        <option value="sizeSmallest">Tamanho (Menor)</option>
+        <option value="type">Tipo (A-Z)</option>
+        <option value="typeDesc">Tipo (Z-A)</option>
+      </select>
+    </div>
+    <div class="sort-container">
+      <label for="items-per-page">Itens por página:</label>
+      <select id="items-per-page" aria-label="Itens por página">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="30">30</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+    <div class="sort-container">
+      <label for="theme">Tema:</label>
+      <select id="theme" aria-label="Escolher tema">
+        <option value="light">Claro</option>
+        <option value="dark">Escuro</option>
+        <option value="system" selected>Sistema</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando lista de arquivos...</p>
+  </div>
+
+  <ul id="file-list"></ul>
+
+  <div id="pagination-container" class="pagination-container">
+    <div id="pagination-controls" class="pagination-controls"></div>
+    <div id="pagination-info" class="pagination-info"></div>
+  </div>
+
+  <footer>
+    <p>Projeto mantido por <a href="https://github.com/josieljefferson12" target="_blank">Josiel Jefferson</a></p>
+    <p class="build-info">Última atualização: <span id="build-date"></span></p>
+  </footer>
+
+  <script>
+    // Configurações iniciais
+    const config = {
+      apiUrl: 'https://api.github.com/repos/josieljefferson12/josielluz/contents/',
+      itemsPerPage: 20,
+      currentPage: 1,
+      currentSort: 'name',
+      currentTheme: 'system',
+      allFiles: []
+    };
+
+    // Elementos DOM
+    const DOM = {
+      fileList: document.getElementById('file-list'),
+      searchInput: document.getElementById('search'),
+      sortSelect: document.getElementById('sort'),
+      itemsPerPageSelect: document.getElementById('items-per-page'),
+      themeSelect: document.getElementById('theme'),
+      loading: document.getElementById('loading'),
+      paginationControls: document.getElementById('pagination-controls'),
+      paginationInfo: document.getElementById('pagination-info'),
+      totalFiles: document.getElementById('total-files'),
+      totalSize: document.getElementById('total-size'),
+      lastUpdate: document.getElementById('last-update'),
+      buildDate: document.getElementById('build-date')
+    };
+
+    // Função para formatar a data atual
+    function formatCurrentDate() {
+      const now = new Date();
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+      return now.toLocaleString('pt-BR', options).replace(',', ' -');
+    }
+
+    // Função para formatar tamanho de arquivo
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+    }
+
+    // Função para obter ícone com base no tipo de arquivo
+    function getFileIcon(filename) {
+      const extension = filename.split('.').pop().toLowerCase();
+      const icons = {
+        pdf: '📄',
+        doc: '📄',
+        docx: '📄',
+        xls: '📊',
+        xlsx: '📊',
+        ppt: '📊',
+        pptx: '📊',
+        txt: '📝',
+        csv: '📊',
+        json: '📝',
+        js: '📜',
+        html: '🌐',
+        css: '🎨',
+        png: '🖼️',
+        jpg: '🖼️',
+        jpeg: '🖼️',
+        gif: '🖼️',
+        svg: '🖼️',
+        mp3: '🎵',
+        mp4: '🎬',
+        zip: '📦',
+        rar: '📦',
+        exe: '⚙️',
+        dll: '⚙️',
+        iso: '💿'
+      };
+      return icons[extension] || '📁';
+    }
+
+    // Função para carregar arquivos da API do GitHub
+    async function loadFiles() {
+      try {
+        DOM.loading.style.display = 'flex';
+        const response = await fetch(config.apiUrl);
+        const data = await response.json();
+        
+        // Filtra apenas arquivos (não diretórios)
+        config.allFiles = data.filter(item => item.type === 'file').map(file => ({
+          name: file.name,
+          size: file.size,
+          download_url: file.download_url,
+          type: file.name.split('.').pop().toLowerCase(),
+          updated_at: new Date(file.updated_at)
+        }));
+        
+        updateStats();
+        renderFiles();
+      } catch (error) {
+        console.error('Erro ao carregar arquivos:', error);
+        DOM.fileList.innerHTML = '<li class="file-item">Erro ao carregar arquivos. Por favor, tente novamente mais tarde.</li>';
+      } finally {
+        DOM.loading.style.display = 'none';
+      }
+    }
+
+    // Função para atualizar estatísticas
+    function updateStats() {
+      const totalSizeBytes = config.allFiles.reduce((sum, file) => sum + file.size, 0);
+      
+      DOM.totalFiles.textContent = config.allFiles.length;
+      DOM.totalSize.textContent = formatFileSize(totalSizeBytes);
+      DOM.lastUpdate.textContent = formatCurrentDate();
+      DOM.buildDate.textContent = formatCurrentDate();
+    }
+
+    // Função para renderizar arquivos na página
+    function renderFiles() {
+      // Filtra arquivos com base na pesquisa
+      const searchTerm = DOM.searchInput.value.toLowerCase();
+      let filteredFiles = config.allFiles.filter(file => 
+        file.name.toLowerCase().includes(searchTerm)
+      );
+
+      // Ordena arquivos
+      switch (config.currentSort) {
+        case 'name':
+          filteredFiles.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'nameDesc':
+          filteredFiles.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        case 'date':
+          filteredFiles.sort((a, b) => b.updated_at - a.updated_at);
+          break;
+        case 'dateOldest':
+          filteredFiles.sort((a, b) => a.updated_at - b.updated_at);
+          break;
+        case 'size':
+          filteredFiles.sort((a, b) => b.size - a.size);
+          break;
+        case 'sizeSmallest':
+          filteredFiles.sort((a, b) => a.size - b.size);
+          break;
+        case 'type':
+          filteredFiles.sort((a, b) => a.type.localeCompare(b.type));
+          break;
+        case 'typeDesc':
+          filteredFiles.sort((a, b) => b.type.localeCompare(a.type));
+          break;
+      }
+
+      // Paginação
+      const startIndex = (config.currentPage - 1) * config.itemsPerPage;
+      const endIndex = startIndex + config.itemsPerPage;
+      const paginatedFiles = filteredFiles.slice(startIndex, endIndex);
+      const totalPages = Math.ceil(filteredFiles.length / config.itemsPerPage);
+
+      // Limpa lista
+      DOM.fileList.innerHTML = '';
+
+      // Adiciona arquivos à lista
+      if (paginatedFiles.length === 0) {
+        DOM.fileList.innerHTML = '<li class="file-item">Nenhum arquivo encontrado.</li>';
+      } else {
+        paginatedFiles.forEach(file => {
+          const li = document.createElement('li');
+          li.className = 'file-item';
+          
+          li.innerHTML = `
+            <div class="file-info">
+              <span class="file-icon">${getFileIcon(file.name)}</span>
+              <span class="file-name" title="${file.name}">${file.name}</span>
+            </div>
+            <div class="file-details">
+              <span>${formatFileSize(file.size)}</span>
+              <span>${file.updated_at.toLocaleDateString('pt-BR')}</span>
+            </div>
+            <a href="${file.download_url}" class="file-download" download>Download</a>
+          `;
+          
+          DOM.fileList.appendChild(li);
+        });
+      }
+
+      // Atualiza controles de paginação
+      updatePaginationControls(filteredFiles.length, totalPages);
+    }
+
+    // Função para atualizar controles de paginação
+    function updatePaginationControls(totalItems, totalPages) {
+      DOM.paginationControls.innerHTML = '';
+      DOM.paginationInfo.innerHTML = '';
+      
+      if (totalPages <= 1) return;
+      
+      // Botão Anterior
+      const prevButton = document.createElement('button');
+      prevButton.textContent = 'Anterior';
+      prevButton.className = 'pagination-btn';
+      prevButton.disabled = config.currentPage === 1;
+      prevButton.addEventListener('click', () => {
+        config.currentPage--;
+        renderFiles();
+      });
+      DOM.paginationControls.appendChild(prevButton);
+      
+      // Números de página
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, config.currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      if (startPage > 1) {
+        const firstPageButton = document.createElement('button');
+        firstPageButton.textContent = '1';
+        firstPageButton.className = 'pagination-btn';
+        firstPageButton.addEventListener('click', () => {
+          config.currentPage = 1;
+          renderFiles();
+        });
+        DOM.paginationControls.appendChild(firstPageButton);
+        
+        if (startPage > 2) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          DOM.paginationControls.appendChild(ellipsis);
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.className = `pagination-btn ${i === config.currentPage ? 'active' : ''}`;
+        pageButton.addEventListener('click', () => {
+          config.currentPage = i;
+          renderFiles();
+        });
+        DOM.paginationControls.appendChild(pageButton);
+      }
+      
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const ellipsis = document.createElement('span');
+          ellipsis.textContent = '...';
+          DOM.paginationControls.appendChild(ellipsis);
+        }
+        
+        const lastPageButton = document.createElement('button');
+        lastPageButton.textContent = totalPages;
+        lastPageButton.className = 'pagination-btn';
+        lastPageButton.addEventListener('click', () => {
+          config.currentPage = totalPages;
+          renderFiles();
+        });
+        DOM.paginationControls.appendChild(lastPageButton);
+      }
+      
+      // Botão Próximo
+      const nextButton = document.createElement('button');
+      nextButton.textContent = 'Próximo';
+      nextButton.className = 'pagination-btn';
+      nextButton.disabled = config.currentPage === totalPages;
+      nextButton.addEventListener('click', () => {
+        config.currentPage++;
+        renderFiles();
+      });
+      DOM.paginationControls.appendChild(nextButton);
+      
+      // Informação da página
+      const startItem = (config.currentPage - 1) * config.itemsPerPage + 1;
+      const endItem = Math.min(config.currentPage * config.itemsPerPage, totalItems);
+      DOM.paginationInfo.textContent = `Mostrando ${startItem}-${endItem} de ${totalItems} arquivos`;
+    }
+
+    // Função para aplicar o tema
+    function applyTheme(theme) {
+      if (theme === 'system') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    // Event Listeners
+    DOM.searchInput.addEventListener('input', () => {
+      config.currentPage = 1;
+      renderFiles();
+    });
+
+    DOM.sortSelect.addEventListener('change', (e) => {
+      config.currentSort = e.target.value;
+      renderFiles();
+    });
+
+    DOM.itemsPerPageSelect.addEventListener('change', (e) => {
+      config.itemsPerPage = parseInt(e.target.value);
+      config.currentPage = 1;
+      renderFiles();
+    });
+
+    DOM.themeSelect.addEventListener('change', (e) => {
+      config.currentTheme = e.target.value;
+      applyTheme(config.currentTheme);
+    });
+
+    // Verificar tema do sistema
+    if (window.matchMedia) {
+      const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      colorSchemeQuery.addEventListener('change', (e) => {
+        if (config.currentTheme === 'system') {
+          applyTheme('system');
+        }
+      });
+    }
+
+    // Inicialização
+    function init() {
+      // Carrega tema salvo ou usa o padrão do sistema
+      const savedTheme = localStorage.getItem('theme');
+      config.currentTheme = savedTheme || 'system';
+      DOM.themeSelect.value = config.currentTheme;
+      applyTheme(config.currentTheme);
+      
+      // Atualiza a data de construção
+      DOM.buildDate.textContent = formatCurrentDate();
+      DOM.lastUpdate.textContent = formatCurrentDate();
+      
+      // Carrega os arquivos
+      loadFiles();
+    }
+
+    // Inicia a aplicação
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
