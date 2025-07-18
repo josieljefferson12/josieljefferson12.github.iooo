@@ -1,0 +1,186 @@
+# Nome do workflow que aparecerá na interface do GitHub Actions
+name: Deploy Jekyll with GitHub Pages2
+
+# Define os eventos que disparam a execução do workflow
+on:
+  # Dispara quando há push para o repositório
+  push:
+    # Apenas para o branch main
+    branches: ["main"]
+    # Observa mudanças em qualquer arquivo do repositório
+    paths:
+      - '**/*'
+  # Permite acionar manualmente o workflow
+  workflow_dispatch:
+  # Agenda execuções automáticas
+  schedule:
+    # Executa a cada 2 dias à meia-noite UTC (formato cron)
+    - cron: '0 0 */2 * *'
+
+# Configura as permissões necessárias para o workflow
+permissions:
+  # Permite escrever no repositório
+  contents: write
+  # Permite publicar no GitHub Pages
+  pages: write
+  # Permite usar tokens JWT para autenticação
+  id-token: write
+
+# Configura como lidar com execuções simultâneas
+concurrency:
+  # Agrupa todas as execuções relacionadas ao pages
+  group: "pages"
+  # false => Não cancela execuções em andamento
+  cancel-in-progress: false  #false ou true# Agora cancela execuções anteriores automaticamente
+
+# Define os jobs (tarefas) que compõem o workflow
+jobs:
+  # Primeiro job: configuração e geração de metadados
+  setup:
+    # Executa em máquina com Ubuntu
+    runs-on: ubuntu-latest
+    # Passos deste job
+    steps:
+      # Faz checkout do código do repositório
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Baixa todo o histórico de commits (não apenas o último)
+          fetch-depth: 0
+
+      # Configura o ambiente Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Usa a versão 20 do Node.js
+          node-version: '20'
+
+      # Instala as dependências do projeto
+      - name: Install dependencies
+        run: npm install
+
+      # Gera metadados dos arquivos
+      - name: Generate files metadata
+        run: npm start
+        env:
+          # Usa um token pessoal para autenticação
+          GITHUB_TOKEN: ${{ secrets.MY_PAGES_GITHUB_TOKEN }}
+
+########## 👇 ########## 👇 ##########
+      # Passo 6: Commita alterações nos metadados
+      - name: Commit metadata changes
+        run: |
+          cd main-repo
+          git config --global user.name "github-actions[bot]"  # Configura usuário
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"  # Configura email
+          git add files_metadata.json  # Adiciona arquivo de metadados
+          if git diff --cached --quiet; then
+            echo "No changes to commit"  # Verifica se há alterações
+          else
+            git commit -m "Automatic metadata update [skip ci]" || echo "Commit failed - continuing..."  # Commita
+            git pull --rebase origin main || echo "Rebase failed - continuing..."  # Atualiza branch
+            git push origin main || echo "Push failed - continuing..."  # Envia alterações
+          fi
+        continue-on-error: true  # Continua mesmo em caso de erro
+########## 👆 ########## 👆 ##########
+
+      # Commita as mudanças nos metadados automaticamente
+      - name: Commit metadata changes
+        run: |
+          # Configura o usuário do Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          # Adiciona o arquivo de metadados modificado
+          git add files_metadata.json
+          # Verifica se há mudanças antes de commitar
+          git diff --cached --quiet || git commit -m "Automatic metadata update [skip ci]"
+          # Envia as alterações para o repositório
+          git push
+
+  # Segundo job: construção do site Jekyll
+  build:
+    # Depende da conclusão do job setup
+    needs: setup
+    # Executa em máquina com Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      # Faz checkout do código (incluindo metadados atualizados)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configura o ambiente Ruby
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          # Usa Ruby versão 3.1
+          ruby-version: '3.1'
+          # Habilita cache para as gems (dependências)
+          bundler-cache: true
+
+      # Prepara o ambiente para GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Compila o site com Jekyll
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          # Pasta de origem do site
+          source: ./
+          # Pasta de destino dos arquivos gerados
+          destination: ./_site
+
+      # Envia os arquivos compilados como artefato para deploy
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Caminho dos arquivos a serem enviados
+          path: './_site'
+
+  # Job de deploy
+  deploy:
+    environment:
+      name: github-pages  # Nome do ambiente
+      url: ${{ steps.deployment.outputs.page_url }}  # URL da página
+    runs-on: ubuntu-latest  # Executa no Ubuntu mais recente
+    needs: build  # Depende do job build
+    steps:
+      # Passo 1: Verifica deployments ativos
+      - name: Check active deployments
+        id: check-deploy
+        timeout-minutes: 15  # Tempo máximo
+        run: |
+          echo "Checking for active deployments..."
+          
+          # Loop para verificar status
+          for i in {1..90}; do
+            # Faz requisição para API do GitHub
+            RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pages")
+            
+            # Extrai status do deployment
+            DEPLOY_STATUS=$(echo "$RESPONSE" | jq -r '.status')
+            
+            # Verifica se pode prosseguir
+            if [[ "$DEPLOY_STATUS" == "built" || "$DEPLOY_STATUS" == "null" ]]; then
+              echo "No active deployments found. Proceeding..."
+              echo "ready=true" >> $GITHUB_OUTPUT
+              break
+            else
+              echo "Active deployment found (status: $DEPLOY_STATUS). Attempt $i/90..."
+              if [ $i -eq 90 ]; then
+                echo "Timeout reached after 15 minutes."
+                exit 0
+              fi
+              sleep 10  # Aguarda 10 segundos entre tentativas
+            fi
+          done
+
+      # Passo 2: Faz deploy para GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        timeout-minutes: 30  # Tempo máximo
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Token de autenticação
