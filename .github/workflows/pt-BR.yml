@@ -1,83 +1,62 @@
-# Nome do workflow que aparecerá na interface do GitHub Actions
 name: Deploy Jekyll to GitHub Pages
 
-# Define os eventos que disparam a execução do workflow
 on:
-  # Dispara quando há push para o branch main
   push:
     branches: ["main"]
-    # Ignora alterações nestes caminhos para evitar triggers desnecessários
     paths-ignore:
       - '.github/workflows/*.yml'
       - 'README.md'
-  # Permite acionar manualmente o workflow
   workflow_dispatch:
-  # Agenda execuções automáticas a cada 2 dias
   schedule:
     - cron: '0 0 */2 * *'
 
-# Configura as permissões necessárias para o workflow
 permissions:
-  # Permite escrever no repositório
   contents: write
-  # Permite publicar no GitHub Pages
   pages: write
-  # Permite usar tokens JWT para autenticação
   id-token: write
 
-# Configura como lidar com execuções simultâneas
 concurrency:
-  # Agrupa todas as execuções relacionadas ao pages
   group: "pages"
-  # Cancela automaticamente execuções anteriores quando uma nova é iniciada
   cancel-in-progress: true
 
-# Define os jobs (tarefas) que compõem o workflow
 jobs:
-  # Job 1: Configuração e geração de metadados
   setup:
-    # Executa em máquina com Ubuntu mais recente
     runs-on: ubuntu-latest
-    # Define outputs que podem ser usados por outros jobs
     outputs:
-      # Indica se os metadados foram atualizados
       metadata_updated: ${{ steps.check-metadata.outputs.updated }}
-    # Passos deste job
     steps:
-      # Passo 1: Faz checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Baixa todo o histórico de commits
           fetch-depth: 0
 
-      # Passo 2: Configura o Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          # Usa Node.js versão 20
           node-version: '20'
-          # Habilita cache para npm
           cache: 'npm'
 
-      # Passo 3: Instala as dependências do Node.js
       - name: Install dependencies
-        # Usa npm ci para instalação limpa
-        run: npm ci
+        id: npm-install
+        run: |
+          # Verifica se package-lock.json existe
+          if [ -f "package-lock.json" ]; then
+            echo "Using npm ci for deterministic install"
+            npm ci
+          else
+            echo "No package-lock.json found, using npm install"
+            npm install
+          fi
 
-      # Passo 4: Gera os metadados dos arquivos
       - name: Generate files metadata
         id: generate-metadata
         run: npm start
         env:
-          # Usa token de autenticação do GitHub
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Passo 5: Verifica se houve mudanças nos metadados
       - name: Check for metadata changes
         id: check-metadata
         run: |
-          # Verifica diferenças no arquivo de metadados
           if git diff --exit-code files_metadata.json; then
             echo "No metadata changes detected"
             echo "updated=false" >> $GITHUB_OUTPUT
@@ -86,108 +65,77 @@ jobs:
             echo "updated=true" >> $GITHUB_OUTPUT
           fi
 
-      # Passo 6: Commita as mudanças nos metadados (se houver)
       - name: Commit metadata changes
-        # Executa apenas se houve mudanças nos metadados
         if: steps.check-metadata.outputs.updated == 'true'
         run: |
-          # Configura usuário do Git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          # Adiciona arquivo modificado
           git add files_metadata.json
-          # Cria commit
           git commit -m "Automatic metadata update [skip ci]"
-          # Envia alterações
           git push
 
-  # Job 2: Construção do site Jekyll
+      - name: Generate package-lock.json
+        if: steps.npm-install.outcome == 'success' && !(steps.npm-install.outputs.lockfile-exists)
+        run: |
+          npm install --package-lock-only
+          git add package-lock.json
+          git commit -m "Add package-lock.json" || echo "No changes to commit"
+          git push || echo "Nothing to push"
+
   build:
-    # Depende da conclusão do job setup
     needs: setup
-    # Executa em máquina com Ubuntu mais recente
     runs-on: ubuntu-latest
-    # Passos deste job
     steps:
-      # Passo 1: Faz checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Passo 2: Configura o ambiente Ruby
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          # Usa Ruby versão 3.1
           ruby-version: '3.1'
-          # Habilita cache para as gems
           bundler-cache: true
 
-      # Passo 3: Instala Jekyll e Bundler
       - name: Install Jekyll and Bundler
         run: |
-          # Instala as gems necessárias
           gem install jekyll bundler
-          # Instala as dependências do Gemfile
           bundle install
 
-      # Passo 4: Compila o site com Jekyll
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
-          # Pasta de origem do site
           source: ./
-          # Pasta de destino dos arquivos gerados
           destination: ./_site
-          # Habilita modo verbose para logs detalhados
           verbose: true
 
-      # Passo 5: Verifica se o build foi bem sucedido
       - name: Verify build output
         run: |
-          # Verifica se a pasta _site foi criada
           if [ ! -d "_site" ]; then
             echo "Error: _site directory not found"
             exit 1
           fi
 
-      # Passo 6: Envia os arquivos compilados como artefato
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Caminho dos arquivos a serem enviados
           path: './_site'
 
-  # Job 3: Deploy para GitHub Pages
   deploy:
-    # Configura o ambiente de deploy
     environment:
       name: github-pages
-      # URL da página que será disponibilizada
       url: ${{ steps.deployment.outputs.page_url }}
-    # Executa em máquina com Ubuntu mais recente
     runs-on: ubuntu-latest
-    # Depende da conclusão do job build
     needs: build
-    # Passos deste job
     steps:
-      # Passo 1: Espera por deployments anteriores
       - name: Wait for previous deployments
         uses: fountainhead/action-wait-for-check@v2.0.0
         with:
-          # Token de autenticação
           token: ${{ secrets.GITHUB_TOKEN }}
-          # Referência do branch
           ref: ${{ github.ref }}
-          # Nome do check que deve ser aguardado
           check-name: "pages build and deployment"
-          # Timeout de 10 minutos
           timeout-seconds: 600
-          # Intervalo de verificação de 10 segundos
           interval-seconds: 10
 
-      # Passo 2: Faz deploy para GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        # Timeout de 30 minutos para o deploy
         timeout-minutes: 30
