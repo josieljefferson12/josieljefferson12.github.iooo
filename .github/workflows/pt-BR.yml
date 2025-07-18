@@ -49,9 +49,11 @@ jobs:
           if [ -f "package-lock.json" ] && [ -s "package-lock.json" ]; then
             echo "Using npm ci with existing package-lock.json"
             npm ci
+            echo "lockfile-used=true" >> $GITHUB_OUTPUT
           else
             echo "Using regular npm install"
             npm install
+            echo "lockfile-used=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Generate files metadata
@@ -81,7 +83,7 @@ jobs:
           git push
 
       - name: Generate package-lock.json
-        if: success() && steps.npm-install.outcome == 'success' && (!(exists('package-lock.json')) || (exists('package-lock.json') && !(steps.npm-install.outputs.lockfile-used == 'true')))
+        if: success() && steps.npm-install.outcome == 'success' && steps.npm-install.outputs.lockfile-used == 'false'
         run: |
           npm install --package-lock-only
           git add package-lock.json
