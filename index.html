@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Josiel Jefferson - Downloads</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
-  <!-- Font Awesome para ícones -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css ">
 </head>
 <body>
   <header>
@@ -14,174 +13,119 @@
     <p class="subtitle">Projeto josielluz no GitHub</p>
   </header>
 
-  <main>
-    <div id="stats-container" class="stats-container">
-      <div class="stat-card">
-        <div class="stat-value" id="total-files">0</div>
-        <div class="stat-label">Arquivos</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="total-size">0 MB</div>
-        <div class="stat-label">Tamanho Total</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="last-update">-</div>
-        <div class="stat-label">Última Atualização</div>
-      </div>
+  <div id="stats-container" class="stats-container">
+    <div class="stat-card">
+      <div class="stat-value" id="total-files">0</div>
+      <div class="stat-label">Arquivos</div>
     </div>
-
-    <div class="search-container">
-      <input type="text" id="search" placeholder="Pesquisar arquivos..." aria-label="Pesquisar arquivos">
+    <div class="stat-card">
+      <div class="stat-value" id="total-size">0 MB</div>
+      <div class="stat-label">Tamanho Total</div>
     </div>
-
-    <div class="controls">
-      <div class="sort-container">
-        <label for="sort">Ordenar por:</label>
-        <select id="sort" aria-label="Ordenar arquivos">
-          <option value="name">Nome (A-Z)</option>
-          <option value="nameDesc">Nome (Z-A)</option>
-          <option value="date">Data (Mais recentes)</option>
-          <option value="dateOldest">Data (Mais antigo)</option>
-          <option value="size">Tamanho (Maior)</option>
-          <option value="sizeSmallest">Tamanho (Menor)</option>
-          <option value="type">Tipo (A-Z)</option>
-          <option value="typeDesc">Tipo (Z-A)</option>
-        </select>
-      </div>
-      <div class="sort-container">
-        <label for="items-per-page">Itens por página:</label>
-        <select id="items-per-page" aria-label="Itens por página">
-          <option value="10">10</option>
-          <option value="20" selected>20</option>
-          <option value="30">30</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-      </div>
-      <div class="sort-container">
-        <label for="theme">Tema:</label>
-        <select id="theme" aria-label="Escolher tema">
-          <option value="light">Claro</option>
-          <option value="dark">Escuro</option>
-          <option value="system" selected>Sistema</option>
-        </select>
-      </div>
+    <div class="stat-card">
+      <div class="stat-value" id="last-update">-</div>
+      <div class="stat-label">Última Atualização</div>
     </div>
+  </div>
 
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      <p>Carregando lista de arquivos...</p>
+  <div class="search-container">
+    <input type="text" id="search" placeholder="Pesquisar arquivos..." aria-label="Pesquisar arquivos">
+  </div>
+
+  <div class="controls">
+    <div class="sort-container">
+      <label for="sort">Ordenar por:</label>
+      <select id="sort" aria-label="Ordenar arquivos">
+        <option value="name">Nome (A-Z)</option>
+        <option value="nameDesc">Nome (Z-A)</option>
+        <option value="date">Data (Mais recentes)</option>
+        <option value="dateOldest">Data (Mais antigo)</option>
+        <option value="size">Tamanho (Maior)</option>
+        <option value="sizeSmallest">Tamanho (Menor)</option>
+        <option value="type">Tipo (A-Z)</option>
+        <option value="typeDesc">Tipo (Z-A)</option>
+      </select>
     </div>
-
-    <ul id="file-list"></ul>
-
-    <div id="pagination-container" class="pagination-container">
-      <div id="pagination-controls" class="pagination-controls"></div>
-      <div id="pagination-info" class="pagination-info"></div>
+    <div class="sort-container">
+      <label for="items-per-page">Itens por página:</label>
+      <select id="items-per-page" aria-label="Itens por página">
+        <option value="10">10</option>
+        <option value="20" selected>20</option>
+        <option value="30">30</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
     </div>
-  </main>
+    <div class="sort-container">
+      <label for="theme">Tema:</label>
+      <select id="theme" aria-label="Escolher tema">
+        <option value="light">Claro</option>
+        <option value="dark">Escuro</option>
+        <option value="system" selected>Sistema</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Carregando lista de arquivos...</p>
+  </div>
+
+  <ul id="file-list"></ul>
+
+  <div id="pagination-container" class="pagination-container">
+    <div id="pagination-controls" class="pagination-controls"></div>
+    <div id="pagination-info" class="pagination-info"></div>
+  </div>
 
   <footer>
-    <p>Projeto mantido por <a href="https://github.com/josieljluz " target="_blank">Josiel Jefferson</a></p>
-
-    <div class="social-links">
-      <a href="https://github.com/josieljluz " target="_blank" class="social-link github" aria-label="GitHub">
-        <i class="fab fa-github"></i>
-      </a>
-      <a href="https://gitlab.com/josieljluz " target="_blank" class="social-link gitlab" aria-label="GitLab">
-        <i class="fab fa-gitlab"></i>
-      </a>
-      <a href="https://wa.me/+5589981073340 " target="_blank" class="social-link whatsapp" aria-label="WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-      </a>
-      <a href="https://t.me/ElectronSpeedX " target="_blank" class="social-link telegram" aria-label="Telegram">
-        <i class="fab fa-telegram"></i>
-      </a>
-      <a href="https://facebook.com/josieljeff " target="_blank" class="social-link facebook" aria-label="Facebook">
-        <i class="fab fa-facebook-f"></i>
-      </a>
-      <a href="https://instagram.com/josieljeff " target="_blank" class="social-link instagram" aria-label="Instagram">
-        <i class="fab fa-instagram"></i>
-      </a>
-      <a href="https://twitter.com/josieljeff " target="_blank" class="social-link twitter" aria-label="Twitter">
-        <i class="fab fa-twitter"></i>
-      </a>
-      <a href="https://www.threads.net/ @josieljeff" target="_blank" class="social-link threads" aria-label="Threads">
-        <i class="fab fa-threads"></i>
-      </a>
-      <a href="https://tiktok.com/ @josieljeff" target="_blank" class="social-link tiktok" aria-label="TikTok">
-        <i class="fab fa-tiktok"></i>
-      </a>
-      <a href="https://linkedin.com/in/josieljeff " target="_blank" class="social-link linkedin" aria-label="LinkedIn">
-        <i class="fab fa-linkedin-in"></i>
-      </a>
-      <a href="https://kwai.com/ @josieljeff" target="_blank" class="social-link kwai" aria-label="Kwai">
-        <i class="fas fa-video"></i>
-      </a>
-      <a href="mailto:josiel@example.com" target="_blank" class="social-link email" aria-label="E-mail">
-        <i class="fas fa-envelope"></i>
-      </a>
-      <a href="https://twitter.com/josieljeff " target="_blank" class="social-link x" aria-label="X (Twitter)">
-        <i class="fab fa-x-twitter"></i>
-      </a>
-    </div>
-
+    <p>Projeto mantido por <a href="https://github.com/josieljluz" target="_blank">Josiel Jefferson</a></p>
+    
+        <div class="social-links">
+            <a href="https://github.com/josieljluz" target="_blank" class="social-link github" aria-label="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://gitlab.com/josieljluz" target="_blank" class="social-link gitlab" aria-label="GitLab">
+                <i class="fab fa-gitlab"></i>
+            </a>
+            <a href="https://wa.me/+5589981073340" target="_blank" class="social-link whatsapp" aria-label="WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://t.me/ElectronSpeedX" target="_blank" class="social-link telegram" aria-label="Telegram">
+                <i class="fab fa-telegram"></i>
+            </a>
+            <a href="https://facebook.com/josieljeff" target="_blank" class="social-link facebook" aria-label="Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://instagram.com/josieljeff" target="_blank" class="social-link instagram" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://twitter.com/josieljeff" target="_blank" class="social-link twitter" aria-label="Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://www.threads.net/@josieljeff" target="_blank" class="social-link threads" aria-label="Threads">
+                <i class="fab fa-threads"></i>
+            </a>
+            <a href="https://tiktok.com/@josieljeff" target="_blank" class="social-link tiktok" aria-label="TikTok">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://linkedin.com/in/josieljeff" target="_blank" class="social-link linkedin" aria-label="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="https://kwai.com/@josieljeff" target="_blank" class="social-link kwai" aria-label="Kwai">
+                <i class="fas fa-video"></i>
+            </a>
+            <a href="mailto:josiel@example.com" target="_blank" class="social-link email" aria-label="E-mail">
+                <i class="fas fa-envelope"></i>
+            </a>
+            <a href="https://x.com/josieljeff" target="_blank" class="social-link x" aria-label="X">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+        </div>
+    
     <p class="build-info">Última atualização: <span id="build-date"></span></p>
   </footer>
 
-  <script>
-    // Função para formatar a data atual
-    function formatCurrentDate() {
-      const now = new Date();
-      const options = {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      };
-      return now.toLocaleString('pt-BR', options).replace(',', ' -');
-    }
-
-    // Aplicar tema salvo ou do sistema
-    function applyTheme(theme) {
-      if (theme === 'dark') {
-        document.body.classList.add('dark-mode');
-      } else if (theme === 'light') {
-        document.body.classList.remove('dark-mode');
-      } else {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const currentDate = formatCurrentDate();
-
-      document.getElementById('build-date').textContent = currentDate;
-      document.getElementById('last-update').textContent = currentDate;
-      document.getElementById('loading').style.display = 'none';
-
-      const savedTheme = localStorage.getItem('theme') || 'system';
-      applyTheme(savedTheme);
-
-      document.getElementById('theme').value = savedTheme;
-
-      document.getElementById('theme').addEventListener('change', function () {
-        const selectedTheme = this.value;
-        localStorage.setItem('theme', selectedTheme);
-        applyTheme(selectedTheme);
-      });
-    });
-
-    // Aqui você pode incluir o resto do seu script.js
-    // ... seu código existente para manipulação de arquivos ...
-  </script>
   <script src="script.js"></script>
 </body>
 </html>
