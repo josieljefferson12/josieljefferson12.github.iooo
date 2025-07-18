@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Josiel Jefferson - Downloads</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -126,6 +125,36 @@
     <p class="build-info">Última atualização: <span id="build-date"></span></p>
   </footer>
 
+  <script>
+    // Função para formatar a data atual
+    function formatCurrentDate() {
+      const now = new Date();
+      const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+      return now.toLocaleString('pt-BR', options).replace(',', ' -');
+    }
+
+    // Atualiza as datas quando a página carrega
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentDate = formatCurrentDate();
+      
+      // Atualiza a data no rodapé
+      document.getElementById('build-date').textContent = currentDate;
+      
+      // Atualiza a data no card de estatísticas
+      document.getElementById('last-update').textContent = currentDate;
+    });
+
+    // Aqui você pode incluir o resto do seu script.js
+    // ... seu código existente para manipulação de arquivos ...
+  </script>
   <script src="script.js"></script>
 </body>
-</html>
+  </html>
