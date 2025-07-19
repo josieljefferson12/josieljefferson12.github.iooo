@@ -1,0 +1,67 @@
+name: 🚀 Deploy Controlado do GitHub Pages 🚀
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - '**/*'
+  
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  controlar-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔍 Verificar deployments ativos
+        id: verificar-deploy
+        run: |
+          resposta=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds/latest")
+          
+          status=$(echo "$resposta" | jq -r '.status')
+          trigger=$(echo "$resposta" | jq -r '.trigger.name')
+          commit=$(echo "$resposta" | jq -r '.commit')
+          
+          echo "Último deployment:"
+          echo "Status: $status"
+          echo "Trigger: $trigger"
+          echo "Commit: $commit"
+          
+          if [[ "$status" == "building" && "$trigger" == "GitHub Pages" ]]; then
+            echo "🔄 Deployment oficial em andamento - abortando"
+            echo "deploy_permitido=false" >> $GITHUB_OUTPUT
+          elif [[ "$status" == "built" && "$trigger" == "GitHub Pages" ]]; then
+            echo "✅ Deployment oficial já concluído - abortando"
+            echo "deploy_permitido=false" >> $GITHUB_OUTPUT
+          else
+            echo "✋ Nenhum deployment oficial ativo - podemos prosseguir"
+            echo "deploy_permitido=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🚀 Disparar deployment oficial
+        if: steps.verificar-deploy.outputs.deploy_permitido == 'true'
+        run: |
+          echo "Iniciando deployment oficial do GitHub Pages..."
+          
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds"
+          
+          echo "✅ Deployment oficial foi acionado com sucesso!"
+
+      - name: ℹ️ Status do deployment
+        run: |
+          if [[ "${{ steps.verificar-deploy.outputs.deploy_permitido }}" == "true" ]]; then
+            echo "Um novo deployment oficial foi solicitado."
+            echo "Verifique a aba 'Pages' nas configurações do repositório para acompanhar."
+          else
+            echo "O deployment foi bloqueado pois já existe um processo ativo."
+            echo "Nenhuma ação foi necessária."
+          fi
