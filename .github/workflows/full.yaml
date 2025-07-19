@@ -1,0 +1,148 @@
+# Nome do workflow que aparecerá na aba Actions do GitHub
+name: Deploy Jekyll com GitHub Pages (Completo)
+
+# Define quando o workflow será acionado
+on:
+  # Aciona quando houver push na branch main
+  push:
+    branches: ["main"]
+    # Monitora mudanças em todos os arquivos
+    paths:
+      - '**/*'
+  # Permite acionamento manual na interface do GitHub
+  workflow_dispatch:
+  # Agenda execução automática a cada 2 dias à meia-noite
+  schedule:
+    - cron: '0 0 */2 * *'
+
+# Configura as permissões necessárias
+permissions:
+  contents: write  # Permite escrever no repositório
+  pages: write     # Permite publicar GitHub Pages
+  id-token: write  # Permite autenticação OIDC
+
+# Configuração para evitar execuções paralelas
+concurrency:
+  group: "pages"           # Grupo de concorrência
+  cancel-in-progress: true # Cancela execuções anteriores se uma nova iniciar
+
+# Define os jobs (tarefas) do workflow
+jobs:
+  # Job 1: Configuração inicial
+  setup:
+    runs-on: ubuntu-latest # Executa no Ubuntu mais recente
+    steps:
+      # Passo 1: Baixa o código do repositório
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Baixa todo o histórico do Git (necessário para operações de git posteriores)
+
+      # Passo 2: Configura o Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Usa a versão 20 do Node.js
+
+      # Passo 3: Instala as dependências do Node.js
+      - name: Instalar dependências
+        run: npm install
+
+      # Passo 4: Gera metadados dos arquivos
+      - name: Gerar metadados dos arquivos
+        run: npm start
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_PAGES_GITHUB_TOKEN }} # Usa um token personalizado
+
+      # Passo 5: Commita as mudanças nos metadados
+      - name: Commitar mudanças nos metadados
+        run: |
+          # Configura o usuário do Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Adiciona o arquivo de metadados
+          git add files_metadata.json
+          
+          # Verifica se há mudanças para commitar
+          if git diff --cached --quiet; then
+            echo "Nenhuma mudança para commitar"
+          else
+            # Tenta fazer o commit
+            git commit -m "Atualização automática de metadados [skip ci]" || echo "Falha no commit - continuando..."
+            # Sincroniza com o repositório remoto
+            git pull --rebase origin main || echo "Falha no rebase - continuando..."
+            # Envia as mudanças
+            git push origin main || echo "Falha no push - continuando..."
+          fi
+        continue-on-error: true # Continua mesmo se este passo falhar
+
+  # Job 2: Construção do site Jekyll
+  build:
+    needs: setup # Depende do job setup terminar primeiro
+    runs-on: ubuntu-latest
+    steps:
+      # Passo 1: Baixa o código novamente
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      # Passo 2: Configura o Ruby
+      - name: Configurar Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1' # Usa Ruby 3.1
+          bundler-cache: true # Habilita cache do Bundler para instalação mais rápida
+
+      # Passo 3: Configura o ambiente do GitHub Pages
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # Passo 4: Constrói o site com Jekyll
+      - name: Construir com Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./   # Diretório de origem
+          destination: ./_site # Diretório de saída
+
+      # Passo 5: Envia o artefato para deploy
+      - name: Enviar artefato
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './_site' # Caminho do site construído
+
+  # Job 3: Deploy para GitHub Pages
+  deploy:
+    environment:
+      name: github-pages # Nome do ambiente
+      url: ${{ steps.deployment.outputs.page_url }} # URL que será publicada
+    runs-on: ubuntu-latest
+    needs: build # Depende do job build terminar
+    steps:
+      # Passo 1: Verifica se já existe um deploy em andamento
+      - name: Verificar deploys existentes
+        id: check-deploy
+        run: |
+          # Faz requisição à API do GitHub para ver status das Pages
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          
+          # Extrai o status atual
+          status=$(echo "$response" | jq -r '.status')
+          
+          # Se estiver em andamento ou já concluído, pula o deploy
+          if [[ "$status" == "building" || "$status" == "built" ]]; then
+            echo "Deploy das Pages já em andamento ou concluído. Pulando..."
+            echo "skip_deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "Nenhum deploy ativo encontrado. Prosseguindo..."
+            echo "skip_deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Passo 2: Faz o deploy se não houver outro em andamento
+      - name: Fazer deploy no GitHub Pages
+        if: steps.check-deploy.outputs.skip_deploy != 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # Token de autenticação
