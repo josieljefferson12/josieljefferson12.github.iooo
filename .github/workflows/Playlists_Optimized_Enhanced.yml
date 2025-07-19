@@ -67,11 +67,11 @@ jobs:
       - name: Executar playlists.py
         run: python playlists.py
       
-#      - name: Executar Playlist.py
-#        run: python Playlist.py
+      - name: Executar Playlist.py
+        run: python Playlist.py
       
-      - name: Executar TiviMate.py
-        run: python TiviMate.py
+#      - name: Executar TiviMate.py
+#        run: python TiviMate.py
       
       # 6. Adiciona timestamp nos arquivos baixados
       - name: Adicionar timestamp nos arquivos
