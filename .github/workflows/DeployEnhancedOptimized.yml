@@ -1,0 +1,253 @@
+name: 🚀 Deploy Avançado do GitHub Pages (Otimizado)
+
+# Configuração de triggers:
+# - Push na branch main (monitorando todas as alterações de arquivos)
+# - Acionamento manual via interface
+# - Agendamento automático a cada 2 dias para rebuild
+on:
+  push:
+    branches: ["main"]
+    paths: ['**/*']  # Monitora todas as alterações de arquivos
+  workflow_dispatch:  # Permite acionamento manual
+  schedule:
+    - cron: '0 0 */2 * *'  # Executa a cada 2 dias à meia-noite
+
+# Configuração de permissões:
+# - write para pages e id-token (necessário para deploy)
+# - read para contents (apenas leitura do repositório)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Controle de concorrência:
+# - Evita execuções paralelas do mesmo workflow
+# - Cancela execuções anteriores não finalizadas
+concurrency:
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Verificação e controle de deployments
+  verificar-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Tempo máximo para verificação
+    outputs:
+      deploy_permitido: ${{ steps.verificar-deploy.outputs.deploy_permitido }}
+    
+    steps:
+      # Passo 1.1: Verifica deployments existentes na API do GitHub
+      - name: 🔍 Verificar deployments ativos
+        id: verificar-deploy
+        run: |
+          # Consulta a API para obter o status do último build
+          resposta=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds/latest")
+          
+          # Extrai informações relevantes do JSON de resposta
+          status=$(echo "$resposta" | jq -r '.status')
+          trigger=$(echo "$resposta" | jq -r '.trigger.name')
+          commit=$(echo "$resposta" | jq -r '.commit')
+          
+          # Log de informações para debug
+          echo "Último deployment:"
+          echo "Status: $status"
+          echo "Trigger: $trigger"
+          echo "Commit: $commit"
+          
+          # Lógica de controle de deployments:
+          # - Bloqueia se já houver um deployment oficial em andamento/concluído
+          # - Permite prosseguir caso contrário
+          if [[ "$status" == "building" && "$trigger" == "GitHub Pages" ]]; then
+            echo "🔄 Deployment oficial em andamento - abortando"
+            echo "deploy_permitido=false" >> $GITHUB_OUTPUT
+          elif [[ "$status" == "built" && "$trigger" == "GitHub Pages" ]]; then
+            echo "✅ Deployment oficial já concluído - abortando"
+            echo "deploy_permitido=false" >> $GITHUB_OUTPUT
+          else
+            echo "✋ Nenhum deployment oficial ativo - podemos prosseguir"
+            echo "deploy_permitido=true" >> $GITHUB_OUTPUT
+          fi
+
+  # Job 2: Configuração inicial e processamento de metadados
+  setup:
+    needs: verificar-deploy  # Depende da verificação de deploy
+    if: needs.verificar-deploy.outputs.deploy_permitido == 'true'  # Executa apenas se permitido
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      # Passo 2.1: Checkout do repositório com histórico completo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Baixa todo o histórico do git
+          path: main-repo  # Armazena em subdiretório para organização
+          persist-credentials: false  # Segurança: não persiste credenciais
+
+      # Passo 2.2: Configura Node.js (necessário para scripts de metadados)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Versão LTS estável
+
+      # Passo 2.3: Verifica/Cria package.json se não existir
+      - name: Verify/Create package.json
+        run: |
+          cd main-repo
+          # Cria package.json básico se não existir
+          if [ ! -f "package.json" ]; then
+            echo "Creating basic package.json..."
+            echo '{
+              "name": "temp-site",
+              "version": "1.0.0",
+              "scripts": {
+                "start": "echo 'No script defined' && exit 0"
+              }
+            }' > package.json
+          fi
+
+      # Passo 2.4: Instala dependências Node.js
+      - name: Install dependencies
+        run: |
+          cd main-repo
+          npm install --no-package-lock  # Instala sem travar versões
+          npm install  # Instala dependências
+
+      # Passo 2.5: Gera metadados de arquivos (executa script npm)
+      - name: Generate files metadata
+        run: |
+          cd main-repo
+          npm start  # Executa script definido no package.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_PAGES_GITHUB_TOKEN }}  # Token para autenticação
+
+      # Passo 2.6: Commita alterações nos metadados (se houver)
+      - name: Commit metadata changes
+        run: |
+          cd main-repo
+          # Configura usuário do git para commits
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Adiciona e commita apenas se houver alterações
+          git add files_metadata.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Automatic metadata update [skip ci]" || echo "Commit failed - continuing..."
+            git pull --rebase origin main || echo "Rebase failed - continuing..."
+            git push origin main || echo "Push failed - continuing..."
+          fi
+        continue-on-error: true  # Não falha o workflow em caso de erro
+
+  # Job 3: Build do site com Jekyll
+  build:
+    needs: [verificar-deploy, setup]  # Depende dos jobs anteriores
+    if: needs.verificar-deploy.outputs.deploy_permitido == 'true'  # Executa apenas se permitido
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    
+    steps:
+      # Passo 3.1: Checkout do repositório
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: main-repo
+
+      # Passo 3.2: Configura ambiente Ruby (necessário para Jekyll)
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'  # Versão compatível com GitHub Pages
+          bundler-cache: true  # Habilita cache para instalação mais rápida
+
+      # Passo 3.3: Configura ambiente GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Passo 3.4: Executa build com Jekyll
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./main-repo  # Diretório fonte
+          destination: ./_site  # Diretório de saída
+
+      # Passo 3.5: Upload do artefato para deploy
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './_site'  # Caminho do site gerado
+
+  # Job 4: Deploy para GitHub Pages
+  deploy:
+    needs: [verificar-deploy, build]  # Depende do build
+    if: needs.verificar-deploy.outputs.deploy_permitido == 'true'  # Executa apenas se permitido
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}  # URL gerada
+    
+    steps:
+      # Passo 4.1: Verifica deployments ativos (dupla verificação)
+      - name: Check active deployments
+        id: check-deploy
+        timeout-minutes: 15
+        run: |
+          echo "Verificando deployments ativos..."
+          
+          # Loop de verificação com timeout
+          for i in {1..90}; do
+            # Consulta API do GitHub para status do Pages
+            RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pages")
+            
+            # Extrai status do deployment
+            DEPLOY_STATUS=$(echo "$RESPONSE" | jq -r '.status')
+            
+            # Verifica condições para prosseguir
+            if [[ "$DEPLOY_STATUS" == "built" || "$DEPLOY_STATUS" == "null" ]]; then
+              echo "Nenhum deployment ativo encontrado. Prosseguindo..."
+              echo "ready=true" >> $GITHUB_OUTPUT
+              break
+            else
+              echo "Deployment ativo encontrado (status: $DEPLOY_STATUS). Tentativa $i/90..."
+              if [ $i -eq 90 ]; then
+                echo "Timeout após 15 minutos."
+                exit 0
+              fi
+              sleep 10  # Intervalo entre verificações
+            fi
+          done
+
+      # Passo 4.2: Executa deploy para GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        timeout-minutes: 30
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Token de autenticação
+
+  # Job 5: Status final (apenas para feedback)
+  status:
+    needs: [verificar-deploy, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      # Passo 5.1: Exibe status baseado no resultado do fluxo
+      - name: ℹ️ Status do deployment
+        run: |
+          if [[ "${{ needs.verificar-deploy.outputs.deploy_permitido }}" == "true" ]]; then
+            if [[ "${{ needs.deploy.result }}" == "success" ]]; then
+              echo "✅ Deployment concluído com sucesso!"
+              echo "URL: ${{ needs.deploy.outputs.page_url }}"
+            else
+              echo "❌ Falha no processo de deployment"
+            fi
+          else
+            echo "⏸️ Deployment não foi necessário - já existe um processo ativo"
+          fi
