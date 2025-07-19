@@ -109,10 +109,141 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    
+    /* Estilos para as estatísticas */
+    .stats-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .stat-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      min-width: 120px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      opacity: 0.8;
+    }
+    
+    /* Estilos para a barra de pesquisa */
+    .search-container {
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .search-container input {
+      width: 100%;
+      max-width: 500px;
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+    
+    /* Estilos para os controles */
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .sort-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .sort-container select {
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
+    
+    /* Estilos para a lista de arquivos */
+    #file-list-container {
+      flex: 1;
+      padding: 1rem;
+    }
+    
+    #file-list {
+      list-style: none;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    /* Estilos para a paginação */
+    .pagination-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .pagination-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .pagination-controls button {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      cursor: pointer;
+    }
+    
+    .pagination-controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* Estilos para os links sociais */
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .social-link {
+      color: var(--text-color);
+      font-size: 1.5rem;
+      transition: color 0.3s;
+    }
+    
+    .social-link:hover {
+      color: var(--primary-color);
+    }
+    
+    .build-info {
+      font-size: 0.8rem;
+      color: var(--text-color);
+      opacity: 0.7;
+    }
   </style>
-  
-  <!-- CSS principal carregado de forma assíncrona -->
-  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
 </head>
 <body>
   <!-- Cabeçalho da página -->
@@ -244,7 +375,7 @@
     <!-- Informação de build/atualização -->
     <p class="build-info">Última atualização: <span id="build-date"></span></p>
   </footer>
-  <script src="script.js"></script>
+
   <!-- Scripts JavaScript -->
   <script>
   /**
@@ -256,13 +387,20 @@
       const script = document.createElement('script');
       script.src = 'script.js';
       script.async = true;
-      document.body.appendChild(script);
       
-      // Monitora quando o script principal é carregado para atualizar a data
+      // Configura o callback para quando o script for carregado
       script.onload = () => {
-        // Configura um MutationObserver para detectar mudanças nas estatísticas
+        // Inicia o observador de mudanças nas estatísticas
         observeStatsChanges();
+        
+        // Simula uma mudança após 2 segundos (apenas para demonstração)
+        setTimeout(() => {
+          document.getElementById('total-files').textContent = '10';
+          document.getElementById('total-size').textContent = '25 MB';
+        }, 2000);
       };
+      
+      document.body.appendChild(script);
     };
     
     // 2. Configura um observador para detectar mudanças nas estatísticas
