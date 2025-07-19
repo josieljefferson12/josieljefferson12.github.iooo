@@ -214,3 +214,21 @@
 2025-07-19 22:14:54,822 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgportugal.xml.gz | Tamanho: 1993086 bytes | Hash: 9364885d2b55a41628824f999d644e04
 2025-07-19 22:14:55,137 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgbrasilportugal.xml.gz | Tamanho: 113536 bytes | Hash: ad650a2f6eef14cb354b539d86cdc05d
 2025-07-19 22:14:55,138 - INFO - Todos os downloads foram concluídos com sucesso!
+2025-07-19 22:19:55,140 - INFO - Iniciando processo de download para Playlist...
+2025-07-19 22:19:55,142 - INFO - Tentativa 1/3: Baixando http://m3u4u.com/m3u/3wk1y24kx7uzdevxygz7
+2025-07-19 22:19:55,143 - INFO - Tentativa 1/3: Baixando http://m3u4u.com/m3u/jq2zy9epr3bwxmgwyxr5
+2025-07-19 22:19:55,143 - INFO - Tentativa 1/3: Baixando http://m3u4u.com/m3u/782dyqdrqkh1xegen4zp
+2025-07-19 22:19:55,144 - INFO - Tentativa 1/3: Baixando https://gitlab.com/josieljefferson12/playlists/-/raw/main/PiauiTV.m3u
+2025-07-19 22:19:55,144 - INFO - Tentativa 1/3: Baixando https://gitlab.com/josieljefferson12/playlists/-/raw/main/m3u4u_proton.me.m3u
+2025-07-19 22:19:55,405 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/PiauiTV.m3u | Tamanho: 76851 bytes | Hash: ed19d1bee8112f753504aab432876025
+2025-07-19 22:19:55,405 - INFO - Tentativa 1/3: Baixando http://m3u4u.com/epg/3wk1y24kx7uzdevxygz7
+2025-07-19 22:19:55,485 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/m3u@proton.me.m3u | Tamanho: 4700379 bytes | Hash: 17e34181bba3a93ed726df4bc76b9a9c
+2025-07-19 22:19:55,485 - INFO - Tentativa 1/3: Baixando http://m3u4u.com/epg/jq2zy9epr3bwxmgwyxr5
+2025-07-19 22:19:55,931 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgbrasilportugal.m3u | Tamanho: 6833 bytes | Hash: 2b8d239a20f299fbb89cf6cc8933170f
+2025-07-19 22:19:55,932 - INFO - Tentativa 1/3: Baixando http://m3u4u.com/epg/782dyqdrqkh1xegen4zp
+2025-07-19 22:19:56,165 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgbrasil.m3u | Tamanho: 639011 bytes | Hash: b45a4ecb7e9e16b774d737233baa4560
+2025-07-19 22:19:56,285 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgportugal.m3u | Tamanho: 2262348 bytes | Hash: fce788edd736f5407b18f61966f41949
+2025-07-19 22:19:56,460 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgportugal.xml.gz | Tamanho: 1993086 bytes | Hash: 9364885d2b55a41628824f999d644e04
+2025-07-19 22:19:56,825 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgbrasil.xml.gz | Tamanho: 790202 bytes | Hash: db8276eab1f45d4eea64a02943935a3c
+2025-07-19 22:19:57,159 - INFO - Sucesso: /home/runner/work/josieljefferson12.github.io/josieljefferson12.github.io/Playlist/epgbrasilportugal.xml.gz | Tamanho: 113536 bytes | Hash: ad650a2f6eef14cb354b539d86cdc05d
+2025-07-19 22:19:57,159 - INFO - Todos os downloads foram concluídos com sucesso!
