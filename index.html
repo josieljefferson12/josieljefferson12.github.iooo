@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="system">
+<head>
+  <!-- Metadados básicos -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Página de downloads de arquivos mantida por Josiel Jefferson">
+  <meta name="keywords" content="downloads, arquivos, Josiel Jefferson, projetos">
+  <meta name="author" content="Josiel Jefferson">
+  
+  <!-- Metadados para Open Graph (compartilhamento em redes sociais) -->
+  <meta property="og:title" content="Josiel Jefferson - Downloads">
+  <meta property="og:description" content="Página de downloads de arquivos mantida por Josiel Jefferson">
+  <meta property="og:type" content="website">
+  
+  <!-- Configuração de tema para navegadores mobile -->
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+  
+  <title>Josiel Jefferson - Downloads</title>
+  
+  <!-- Pré-conexão para CDNs para melhor performance -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://github.com">
+  
+  <!-- Carregamento otimizado de fontes do Font Awesome -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </noscript>
+  
+  <!-- CSS crítico inline para renderização inicial mais rápida -->
+  <style>
+    /* Variáveis CSS para temas claro e escuro */
+    :root {
+      --primary-color: #2563eb;
+      --text-color: #1e293b;
+      --bg-color: #ffffff;
+      --border-color: #e2e8f0;
+      --card-bg: #f8fafc;
+    }
+    
+    [data-theme="dark"] {
+      --primary-color: #3b82f6;
+      --text-color: #f1f5f9;
+      --bg-color: #0f172a;
+      --border-color: #334155;
+      --card-bg: #1e293b;
+    }
+    
+    /* Reset básico */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Estilos gerais do corpo */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      line-height: 1.6;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      transition: background-color 0.3s, color 0.3s;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Estilos do cabeçalho e rodapé */
+    header, footer {
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    header {
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    
+    /* Estilos do indicador de carregamento */
+    #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--primary-color);
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  
+  <!-- CSS principal carregado de forma assíncrona -->
+  <link rel="stylesheet" href="style.css" media="print" onload="this.media='all'">
+</head>
+<body>
+  <!-- Cabeçalho da página -->
+  <header>
+    <h1>📁 ARQUIVOS PARA DOWNLOAD</h1>
+    <p class="subtitle">Projeto josielluz no GitHub</p>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main>
+    <!-- Estatísticas -->
+    <div id="stats-container" class="stats-container">
+      <div class="stat-card">
+        <div class="stat-value" id="total-files">0</div>
+        <div class="stat-label">Arquivos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-size">0 MB</div>
+        <div class="stat-label">Tamanho Total</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="last-update">-</div>
+        <div class="stat-label">Última Atualização</div>
+      </div>
+    </div>
+
+    <!-- Barra de pesquisa -->
+    <div class="search-container">
+      <input type="search" id="search" placeholder="Pesquisar arquivos..." aria-label="Pesquisar arquivos" autocomplete="off">
+    </div>
+
+    <!-- Controles de ordenação e exibição -->
+    <div class="controls">
+      <div class="sort-container">
+        <label for="sort">Ordenar por:</label>
+        <select id="sort" aria-label="Ordenar arquivos">
+          <option value="name">Nome (A-Z)</option>
+          <option value="nameDesc">Nome (Z-A)</option>
+          <option value="date">Data (Mais recentes)</option>
+          <option value="dateOldest">Data (Mais antigo)</option>
+          <option value="size">Tamanho (Maior)</option>
+          <option value="sizeSmallest">Tamanho (Menor)</option>
+          <option value="type">Tipo (A-Z)</option>
+          <option value="typeDesc">Tipo (Z-A)</option>
+        </select>
+      </div>
+      <div class="sort-container">
+        <label for="items-per-page">Itens por página:</label>
+        <select id="items-per-page" aria-label="Itens por página">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="30">30</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="sort-container">
+        <label for="theme">Tema:</label>
+        <select id="theme" aria-label="Escolher tema">
+          <option value="light">Claro</option>
+          <option value="dark">Escuro</option>
+          <option value="system" selected>Sistema</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Indicador de carregamento -->
+    <div id="loading" class="loading">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Carregando lista de arquivos...</p>
+    </div>
+
+    <!-- Lista de arquivos -->
+    <div id="file-list-container">
+      <ul id="file-list" aria-live="polite"></ul>
+    </div>
+
+    <!-- Controles de paginação -->
+    <div id="pagination-container" class="pagination-container">
+      <div id="pagination-controls" class="pagination-controls"></div>
+      <div id="pagination-info" class="pagination-info"></div>
+    </div>
+  </main>
+
+  <!-- Rodapé da página -->
+  <footer>
+    <p>Projeto mantido por <a href="https://github.com/josieljluz" target="_blank" rel="noopener noreferrer">Josiel Jefferson</a></p>
+    
+    <!-- Links para redes sociais -->
+    <div class="social-links" aria-label="Redes sociais">
+      <a href="https://github.com/josieljluz" target="_blank" rel="noopener noreferrer" class="social-link github" aria-label="GitHub">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      <a href="https://gitlab.com/josieljluz" target="_blank" rel="noopener noreferrer" class="social-link gitlab" aria-label="GitLab">
+        <i class="fab fa-gitlab" aria-hidden="true"></i>
+      </a>
+      <a href="https://wa.me/+5589981073340" target="_blank" rel="noopener noreferrer" class="social-link whatsapp" aria-label="WhatsApp">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i>
+      </a>
+      <a href="https://t.me/ElectronSpeedX" target="_blank" rel="noopener noreferrer" class="social-link telegram" aria-label="Telegram">
+        <i class="fab fa-telegram" aria-hidden="true"></i>
+      </a>
+      <a href="https://facebook.com/josieljeff" target="_blank" rel="noopener noreferrer" class="social-link facebook" aria-label="Facebook">
+        <i class="fab fa-facebook-f" aria-hidden="true"></i>
+      </a>
+      <a href="https://instagram.com/josieljeff" target="_blank" rel="noopener noreferrer" class="social-link instagram" aria-label="Instagram">
+        <i class="fab fa-instagram" aria-hidden="true"></i>
+      </a>
+      <a href="https://twitter.com/josieljeff" target="_blank" rel="noopener noreferrer" class="social-link twitter" aria-label="Twitter">
+        <i class="fab fa-twitter" aria-hidden="true"></i>
+      </a>
+      <a href="https://www.threads.net/@josieljeff" target="_blank" rel="noopener noreferrer" class="social-link threads" aria-label="Threads">
+        <i class="fab fa-threads" aria-hidden="true"></i>
+      </a>
+      <a href="https://tiktok.com/@josieljeff" target="_blank" rel="noopener noreferrer" class="social-link tiktok" aria-label="TikTok">
+        <i class="fab fa-tiktok" aria-hidden="true"></i>
+      </a>
+      <a href="https://linkedin.com/in/josieljeff" target="_blank" rel="noopener noreferrer" class="social-link linkedin" aria-label="LinkedIn">
+        <i class="fab fa-linkedin-in" aria-hidden="true"></i>
+      </a>
+      <a href="mailto:josiel@example.com" class="social-link email" aria-label="E-mail">
+        <i class="fas fa-envelope" aria-hidden="true"></i>
+      </a>
+      <a href="https://x.com/josieljeff" target="_blank" rel="noopener noreferrer" class="social-link x" aria-label="X (Twitter)">
+        <i class="fab fa-x-twitter" aria-hidden="true"></i>
+      </a>
+    </div>
+    
+    <!-- Informação de build/atualização -->
+    <p class="build-info">Última atualização: <span id="build-date"></span></p>
+  </footer>
+  
+  // <script src="script.js"></script>
+  
+  <!-- Scripts JavaScript -->
+  <script>
+  /**
+   * Função principal para carregar scripts e configurar a página
+   */
+  function initializePage() {
+    // 1. Carrega o script principal de forma assíncrona
+    const loadMainScript = () => {
+      const script = document.createElement('script');
+      script.src = 'script.js';
+      script.async = true;
+      document.body.appendChild(script);
+    };
+    
+    // 2. Configuração do tema (claro/escuro/sistema)
+    const setupTheme = () => {
+      // Função para atualizar o tema baseado nas preferências
+      const updateTheme = () => {
+        const theme = localStorage.getItem('theme') || 'system';
+        let effectiveTheme = theme;
+        
+        if (theme === 'system') {
+          effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches 
+            ? 'dark' 
+            : 'light';
+        }
+        
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+        
+        // Atualiza o valor do select para refletir o tema atual
+        const themeSelect = document.getElementById('theme');
+        if (themeSelect) {
+          themeSelect.value = theme;
+        }
+      };
+      
+      // Listener para mudanças no tema do sistema
+      const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      colorSchemeQuery.addEventListener('change', updateTheme);
+      
+      // Listener para mudanças no select de tema
+      const themeSelect = document.getElementById('theme');
+      if (themeSelect) {
+        themeSelect.addEventListener('change', (e) => {
+          localStorage.setItem('theme', e.target.value);
+          updateTheme();
+        });
+      }
+      
+      // Aplica o tema inicial
+      updateTheme();
+    };
+    
+    // 3. Formatação e exibição da data atual
+    const setupDates = () => {
+      // Formata a data atual no padrão brasileiro
+      const formatCurrentDate = () => {
+        const now = new Date();
+        const options = {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        };
+        return now.toLocaleString('pt-BR', options).replace(',', ' -');
+      };
+      
+      // Atualiza os elementos de data na página
+      const updateDateElements = () => {
+        const currentDate = formatCurrentDate();
+        
+        // Atualiza a data no rodapé
+        const buildDateElement = document.getElementById('build-date');
+        if (buildDateElement) {
+          buildDateElement.textContent = currentDate;
+        }
+        
+        // Atualiza a data nas estatísticas
+        const lastUpdateElement = document.getElementById('last-update');
+        if (lastUpdateElement) {
+          lastUpdateElement.textContent = currentDate;
+        }
+      };
+      
+      updateDateElements();
+    };
+    
+    // Executa todas as funções de inicialização
+    loadMainScript();
+    setupTheme();
+    setupDates();
+  }
+
+  // Inicia a página quando o DOM estiver completamente carregado
+  document.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+</body>
+            </html>
