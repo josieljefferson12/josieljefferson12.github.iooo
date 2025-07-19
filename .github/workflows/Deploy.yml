@@ -1,0 +1,78 @@
+name: 🚀 Deploy Controlado do GitHub Pages
+
+on:
+  # Acionado quando houver push na branch principal
+  push:
+    branches: ["main"]
+    paths:
+      - '**/*'  # Monitora todas as alterações de arquivos
+  
+  # Permite acionamento manual na interface do GitHub
+  workflow_dispatch:
+
+# Permissões necessárias
+permissions:
+  contents: read   # Ler conteúdo do repositório
+  pages: write     # Escrever no GitHub Pages
+  id-token: write  # Para autenticação
+
+jobs:
+  controlar-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Passo 1: Verificar deployments existentes
+      - name: 🔍 Verificar deployments ativos
+        id: verificar-deploy
+        run: |
+          # Consulta a API do GitHub para obter o último build
+          resposta=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds/latest")
+          
+          # Extrai informações importantes
+          status=$(echo "$resposta" | jq -r '.status')
+          trigger=$(echo "$resposta" | jq -r '.trigger.name')
+          commit=$(echo "$resposta" | jq -r '.commit')
+          
+          echo "Último deployment:"
+          echo "Status: $status"
+          echo "Trigger: $trigger"
+          echo "Commit: $commit"
+          
+          # Verifica se já existe um deployment do bot oficial em andamento
+          if [[ "$status" == "building" && "$trigger" == "GitHub Pages" ]]; then
+            echo "🔄 Deployment oficial em andamento - abortando"
+            echo "deploy_permitido=false" >> $GITHUB_OUTPUT
+          elif [[ "$status" == "built" && "$trigger" == "GitHub Pages" ]]; then
+            echo "✅ Deployment oficial já concluído - abortando"
+            echo "deploy_permitido=false" >> $GITHUB_OUTPUT
+          else
+            echo "✋ Nenhum deployment oficial ativo - podemos prosseguir"
+            echo "deploy_permitido=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Passo 2: Disparar deployment oficial quando permitido
+      - name: 🚀 Disparar deployment oficial
+        if: steps.verificar-deploy.outputs.deploy_permitido == 'true'
+        run: |
+          echo "Iniciando deployment oficial do GitHub Pages..."
+          
+          # Dispara um novo build via API
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds"
+          
+          echo "✅ Deployment oficial foi acionado com sucesso!"
+          echo "O GitHub Pages bot irá agora processar o build."
+
+      # Passo 3: Status final
+      - name: ℹ️ Status do deployment
+        run: |
+          if [[ "${{ steps.verificar-deploy.outputs.deploy_permitido }}" == "true" ]]; then
+            echo "Um novo deployment oficial foi solicitado."
+            echo "Verifique a aba 'Pages' nas configurações do repositório para acompanhar."
+          else
+            echo "O deployment foi bloqueado pois já existe um processo ativo."
+            echo "Nenhuma ação foi necessária."
+          fi
