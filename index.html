@@ -109,17 +109,6 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
-    /* Estilos para a data em tempo real */
-    #build-date, #last-update {
-      font-family: monospace;
-      font-size: 0.9rem;
-      background-color: var(--card-bg);
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      display: inline-block;
-      margin-top: 0.2rem;
-    }
   </style>
   
   <!-- CSS principal carregado de forma assíncrona -->
@@ -256,6 +245,8 @@
     <p class="build-info">Última atualização: <span id="build-date"></span></p>
   </footer>
   
+  // <script src="script.js"></script>
+  
   <!-- Scripts JavaScript -->
   <script>
   /**
@@ -343,9 +334,9 @@
         }
       };
       
-      // Atualiza imediatamente e depois a cada segundo
+      // Atualiza imediatamente e configura intervalo para atualização contínua
       updateDateElements();
-      setInterval(updateDateElements, 1000);
+      setInterval(updateDateElements, 1000); // Atualiza a cada segundo
     };
     
     // Executa todas as funções de inicialização
@@ -358,4 +349,4 @@
   document.addEventListener('DOMContentLoaded', initializePage);
   </script>
 </body>
-</html>
+  </html>
