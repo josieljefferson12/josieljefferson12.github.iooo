@@ -91,7 +91,7 @@ function setupDatesOnLoad() {
   
   // Atualiza a data no card de estatísticas
   if (lastUpdateElement) {
-    lastUpdateElement.textContent = `${currentDate}`;// Última Atualização`;
+    lastUpdateElement.textContent = `${currentDate}`;
   }
 }
 
@@ -215,7 +215,7 @@ function updateStats() {
   
   if (lastUpdateElement) {
     lastUpdateElement.textContent = lastModified 
-      ? `${formatDate(lastModified)}` /**Última Atualização`*/
+      ? `${formatDate(lastModified)}`
       : 'N/A';
   }
   
